@@ -1,10 +1,10 @@
+import { wait } from '../../wait';
 import { debounce } from '../debounce';
 
 describe('debounce', () => {
   const ms = 100;
   let f = jest.fn();
   let debounced = debounce(f, ms);
-  const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   beforeEach(async () => {
     debounced.clear();

@@ -1,11 +1,10 @@
+import { wait } from '../../wait';
 import { throttle } from '../throttle';
 
 describe('throttle', () => {
   const ms = 50;
   let f = jest.fn();
   let throttled = throttle(f, ms);
-
-  const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   beforeEach(() => {
     throttled = throttle(f, ms);

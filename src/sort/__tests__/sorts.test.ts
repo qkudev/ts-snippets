@@ -3,6 +3,17 @@ import { heapSort } from '../heap-sort';
 import { insertionSort } from '../insertion-sort';
 import { selectionSort } from '../selection-sort';
 import { quickSort } from '../quick-sort';
+import { countingSort } from '../counting-sort';
+
+const isArraySorted = (arr: number[]) => {
+  for (let i = 0; i < arr.length - 1; i++) {
+    if (arr[i] > arr[i + 1]) {
+      return false;
+    }
+  }
+
+  return true;
+};
 
 describe('sorts', () => {
   const getRandomInt = () =>
@@ -10,16 +21,6 @@ describe('sorts', () => {
 
   const getRandomArrays = () =>
     new Array(10).fill(0).map(() => new Array(100).fill(0).map(getRandomInt));
-
-  const isArraySorted = (arr: number[]) => {
-    for (let i = 0; i < arr.length - 1; i++) {
-      if (arr[i] > arr[i + 1]) {
-        return false;
-      }
-    }
-
-    return true;
-  };
 
   const testSort = (sort: (arr: number[]) => number[]) => {
     const arrays: number[][] = getRandomArrays();
@@ -58,5 +59,15 @@ describe('sorts', () => {
     heapSort(arr);
 
     expect(isArraySorted(arr)).toBe(true);
+  });
+});
+
+describe('non-comparsion based sorts', () => {
+  it('should sort array by counting sort', () => {
+    const arr = [3, 2, 10, 4, -2];
+
+    countingSort(arr);
+
+    expect(isArraySorted(arr)).toEqual(true);
   });
 });
