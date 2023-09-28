@@ -4,9 +4,27 @@ type ReactiveVar<T> = ((next?: T) => T) & {
   onChange: (listener: Listener<T>) => () => void;
 };
 
-export function reactiveVar<T>(initialState: T): ReactiveVar<T> {
+function defaultEqualityFn<T>(a: T, b:T) {
+  return a === b;
+}
+
+export function reactiveVar<T>(initialState: T, equalityFn = defaultEqualityFn<T>): ReactiveVar<T> {
   const listeners = new Set<Listener<T>>();
   let state = initialState;
+
+  function notifyListeners () {
+    listeners.forEach(listener => {
+      listener(state);
+    })
+  }
+
+  function setState (next: T) {
+    if (!equalityFn(state, next)) {
+      state = next;
+
+      notifyListeners();
+    }
+  }
 
   function call(...args: [] | [T]) {
     if (!args.length) {
@@ -14,7 +32,9 @@ export function reactiveVar<T>(initialState: T): ReactiveVar<T> {
     }
 
     const [nextState] = args;
-    state = nextState;
+    if (!equalityFn(state, nextState)) {
+      setState(nextState);
+    }
 
     return state;
   }
