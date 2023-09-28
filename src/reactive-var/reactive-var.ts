@@ -27,19 +27,16 @@ export function reactiveVar<T>(initialState: T, equalityFn = defaultEqualityFn<T
   }
 
   function call(...args: [] | [T]) {
-    if (!args.length) {
-      return state;
-    }
+    if (args.length) {
+      const [nextState] = args;
 
-    const [nextState] = args;
-    if (!equalityFn(state, nextState)) {
       setState(nextState);
     }
 
     return state;
   }
 
-  call.onChange = (listener: Listener<T>) => {
+  call.onChange = function onChange(listener: Listener<T>) {
     if (!listeners.has(listener)) {
       listeners.add(listener);
     }
