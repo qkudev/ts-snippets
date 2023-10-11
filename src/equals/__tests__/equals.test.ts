@@ -98,4 +98,11 @@ describe('equals', () => {
   it('should return false for different arrays with nested objects', () => {
     expect(equals([{ a: 1 }, { b: 2 }], [{ a: 1 }, { b: 3 }])).toBe(false);
   });
+
+  it('should return false for two anonymous functions', () => {
+    const f1 = () => undefined;
+    const f2 = () => undefined;
+
+    expect(equals(f1, f2)).toBe(false);
+  });
 });
