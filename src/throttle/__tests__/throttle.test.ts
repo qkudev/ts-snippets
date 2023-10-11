@@ -1,9 +1,9 @@
-import { wait } from '../../wait';
-import { throttle } from '../throttle';
+import wait from '../../wait';
+import throttle from '../throttle';
 
 describe('throttle', () => {
   const ms = 50;
-  let f = jest.fn();
+  const f = jest.fn();
   let throttled = throttle(f, ms);
 
   beforeEach(() => {

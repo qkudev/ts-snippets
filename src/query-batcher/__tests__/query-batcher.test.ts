@@ -1,5 +1,5 @@
-import { wait } from '../../wait';
-import { QueryBatcher } from '../query-batcher';
+import wait from '../../wait';
+import QueryBatcher from '../query-batcher';
 
 describe('QueryBatcher', () => {
   let batchedCallback = jest.fn();
@@ -7,7 +7,7 @@ describe('QueryBatcher', () => {
   let qb = new QueryBatcher(batchedCallback, timeout);
 
   beforeEach(() => {
-    batchedCallback = jest.fn().mockImplementation(val => Promise.resolve(val));
+    batchedCallback = jest.fn().mockImplementation((val) => Promise.resolve(val));
     qb = new QueryBatcher(batchedCallback, timeout);
   });
 
@@ -65,7 +65,7 @@ describe('QueryBatcher', () => {
   it('should handle "shouldWaitResponse: true" option', async () => {
     batchedCallback = jest
       .fn()
-      .mockImplementation(val => wait(1000).then(() => val));
+      .mockImplementation((val) => wait(1000).then(() => val));
     qb = new QueryBatcher(batchedCallback, timeout, {
       shouldWaitResponse: true,
       debounce: false,

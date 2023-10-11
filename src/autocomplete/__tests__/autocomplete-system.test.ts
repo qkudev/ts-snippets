@@ -1,4 +1,4 @@
-import { AutocompleteSystem } from '../autocomplete-system';
+import AutocompleteSystem from '../autocomplete-system';
 
 describe('AutocompleteSystem', () => {
   const inputs = ['i love you', 'island', 'iroman', 'i love leetcode'];

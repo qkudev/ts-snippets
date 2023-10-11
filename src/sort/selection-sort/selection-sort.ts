@@ -1,4 +1,9 @@
-export const selectionSort = (arr: number[]) => {
+/**
+ * Sorts an array of numbers using the selection sort algorithm.
+ * @param arr - The array of numbers to be sorted.
+ * @returns The sorted array of numbers.
+ */
+const selectionSort = (arr: number[]) => {
   let minIndex = 0;
 
   for (let i = 0; i < arr.length; i++) {
@@ -17,3 +22,5 @@ export const selectionSort = (arr: number[]) => {
 
   return arr;
 };
+
+export default selectionSort;

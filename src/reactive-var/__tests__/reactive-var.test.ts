@@ -1,4 +1,4 @@
-import { reactiveVar } from '../reactive-var';
+import reactiveVar from '../reactive-var';
 
 describe('reactive var', () => {
   it('should set initial state', () => {
@@ -43,7 +43,7 @@ describe('reactive var', () => {
   it('should use given equality fn', () => {
     const reactive = reactiveVar(
       { a: 1 },
-      (a, b) => JSON.stringify(a) === JSON.stringify(b)
+      (a, b) => JSON.stringify(a) === JSON.stringify(b),
     );
     const listener = jest.fn();
     reactive.onChange(listener);
@@ -52,5 +52,19 @@ describe('reactive var', () => {
 
     expect(listener).toHaveBeenCalledTimes(0);
     expect(reactive()).toEqual({ a: 1 });
+  });
+
+  it('should pipe to other value', () => {
+    const x = reactiveVar(1);
+    const y = x.pipe((v) => v * 2);
+
+    const listener = jest.fn();
+    y.onChange(listener);
+
+    x(2);
+
+    expect(y()).toEqual(4);
+    expect(listener).toHaveBeenCalledWith(4);
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 });

@@ -4,7 +4,7 @@ class QElement<T = unknown> {
   constructor(public readonly element: T, public readonly priority: number) {}
 }
 
-export class PriorityQueue<T = unknown> {
+class PriorityQueue<T = unknown> {
   private heap = new Heap<QElement<T>>((a, b) => a.priority - b.priority);
 
   public push(element: T, priority: number) {
@@ -28,3 +28,5 @@ export class PriorityQueue<T = unknown> {
     return this.heap.size;
   }
 }
+
+export default PriorityQueue;

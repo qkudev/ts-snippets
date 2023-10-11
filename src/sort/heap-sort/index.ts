@@ -1,1 +1,1 @@
-export { heapSort } from './heap-sort';
+export { default } from './heap-sort';

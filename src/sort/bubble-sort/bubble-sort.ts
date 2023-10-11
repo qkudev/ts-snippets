@@ -1,4 +1,9 @@
-export const bubbleSort = (arr: number[]) => {
+/**
+ * Sorts an array of numbers using the bubble sort algorithm.
+ * @param arr - The array of numbers to be sorted.
+ * @returns The sorted array of numbers.
+ */
+const bubbleSort = (arr: number[]) => {
   let hasSwapped = true;
 
   while (hasSwapped) {
@@ -14,4 +19,6 @@ export const bubbleSort = (arr: number[]) => {
   }
 
   return arr;
-}
+};
+
+export default bubbleSort;

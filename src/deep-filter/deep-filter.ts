@@ -1,12 +1,11 @@
 /**
  * @see https://leetcode.com/problems/deep-object-filter/
  */
-export const deepFilter = (
+const deepFilter = (
   obj: object,
-  fn: (val: unknown) => boolean
+  fn: (val: unknown) => boolean,
 ): object | undefined => {
-  const isEmpty = (obj: object) =>
-    !(Array.isArray(obj) ? obj : Object.keys(obj)).length;
+  const isEmpty = (o: object) => !(Array.isArray(o) ? o : Object.keys(o)).length;
 
   const filter = (val: unknown): any => {
     if (typeof val !== 'object' || val === null) {
@@ -29,7 +28,7 @@ export const deepFilter = (
     const result = Object.fromEntries(
       Object.entries(val)
         .map(([k, v]) => [k, filter(v)])
-        .filter(([, v]) => v !== undefined)
+        .filter(([, v]) => v !== undefined),
     );
 
     return isEmpty(result) ? undefined : result;
@@ -37,3 +36,5 @@ export const deepFilter = (
 
   return filter(obj);
 };
+
+export default deepFilter;

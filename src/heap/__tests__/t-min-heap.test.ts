@@ -1,4 +1,4 @@
-import { TMinHeap } from '../t-min-heap';
+import TMinHeap from '../t-min-heap';
 
 type Item = {
   val: number;

@@ -1,1 +1,1 @@
-export { WeakSet } from './weak-set';
+export { default } from './weak-set';

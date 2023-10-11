@@ -1,4 +1,4 @@
-import { TMaxHeap } from '../t-max-heap';
+import TMaxHeap from '../t-max-heap';
 
 type Item = {
   val: number;
@@ -23,5 +23,5 @@ describe('TMaxHeap', () => {
 
   it('should 1', () => {
 
-  })
+  });
 });

@@ -2,20 +2,23 @@
  * @see https://leetcode.com/problems/lfu-cache/discuss/207673/Python-concise-solution-**detailed**-explanation%3A-Two-dict-%2B-Doubly-linked-list
  */
 
-class LNode {
+class LNode<T> {
   public freq: number = 1;
-  public next: LNode | null;
-  public prev: LNode | null;
 
-  constructor(public readonly key: number, public val: number) {
+  public next: LNode<T> | null;
+
+  public prev: LNode<T> | null;
+
+  constructor(public readonly key: number, public val: T) {
     this.next = null;
     this.prev = null;
   }
 }
 
-class DLL {
-  public head: LNode = new LNode(-1, -1);
-  public tail: LNode = new LNode(-1, -1);
+class DLL<T> {
+  public head: LNode<T> = new LNode(-1, null as any);
+
+  public tail: LNode<T> = new LNode(-1, null as any);
 
   constructor() {
     this.head.next = this.tail;
@@ -23,17 +26,20 @@ class DLL {
   }
 }
 
-export class LFUCache {
-  private map: Map<number, LNode> = new Map();
-  private freq: Map<number, DLL> = new Map([[1, new DLL()]]);
+class LFUCache<T> {
+  private map: Map<number, LNode<T>> = new Map();
+
+  private freq: Map<number, DLL<T>> = new Map([[1, new DLL()]]);
+
   private minFreq: number = 1;
+
   private curSize: number = 0;
 
   constructor(public readonly capacity: number) {}
 
-  public readonly get = (key: number): number => {
+  public readonly get = (key: number): T | undefined => {
     if (!this.map.has(key) || this.capacity === 0) {
-      return -1;
+      return undefined;
     }
 
     const node = this.map.get(key)!;
@@ -41,7 +47,7 @@ export class LFUCache {
     node.prev!.next = node.next;
     node.next!.prev = node.prev;
     // check if the dll is empty after removing the node
-    if (dll.head.next == dll.tail && this.minFreq == node.freq) {
+    if (dll.head.next === dll.tail && this.minFreq === node.freq) {
       this.minFreq = node.freq + 1;
     }
 
@@ -60,7 +66,7 @@ export class LFUCache {
     return node.val;
   };
 
-  public readonly put = (key: number, value: number): void => {
+  public readonly put = (key: number, value: T): void => {
     if (this.capacity === 0) {
       return;
     }
@@ -76,8 +82,8 @@ export class LFUCache {
     this.curSize += 1;
 
     if (this.curSize > this.capacity) {
-      let dll = this.freq.get(this.minFreq)!;
-      let dNode = dll.tail.prev!;
+      const dll = this.freq.get(this.minFreq)!;
+      const dNode = dll.tail.prev!;
       dNode.prev!.next = dll.tail;
       dll.tail.prev = dNode!.prev;
       this.map.delete(dNode.key);
@@ -95,3 +101,5 @@ export class LFUCache {
     node.prev = dll.head;
   };
 }
+
+export default LFUCache;

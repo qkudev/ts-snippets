@@ -1,4 +1,4 @@
-import { memoize } from '../memoize';
+import memoize from '../memoize';
 
 describe('memoize', () => {
   it('should call original fn only once', () => {

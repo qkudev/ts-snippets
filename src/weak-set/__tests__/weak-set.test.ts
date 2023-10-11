@@ -1,8 +1,8 @@
-import { WeakSet } from '../weak-set';
+import WSet from '../weak-set';
 
 describe('WeakSet', () => {
-  let s: WeakSet = beforeEach(() => {
-    s = new WeakSet();
+  let s: WSet = beforeEach(() => {
+    s = new WSet();
   });
 
   it('should add item as check relation', () => {

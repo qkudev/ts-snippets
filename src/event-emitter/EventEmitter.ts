@@ -3,14 +3,14 @@ type EventName = string | Symbol;
 /**
  * Naive EventEmitter implementation
  */
-export class EventEmitter {
+class EventEmitter {
   private readonly listeners: Map<EventName, Set<Function>> = new Map();
 
   public emit = (event: EventName, ...args: any[]) => {
     const eventListeners = this.listeners.get(event);
     if (!eventListeners) return;
 
-    eventListeners.forEach(listener => listener(...args));
+    eventListeners.forEach((listener) => listener(...args));
   };
 
   public addListener = (event: EventName, listener: Function) => {
@@ -42,7 +42,7 @@ export class EventEmitter {
   };
 
   public removeAllListeners = () => {
-    this.listeners.forEach(eventListeners => {
+    this.listeners.forEach((eventListeners) => {
       eventListeners.clear();
     });
   };
@@ -51,3 +51,5 @@ export class EventEmitter {
     return [...this.listeners.keys()];
   }
 }
+
+export default EventEmitter;

@@ -1,7 +1,7 @@
 /**
  * @see https://leetcode.com/explore/learn/card/sorting/695/non-comparison-based-sorts/4437/
  */
-export const countingSort = (arr: number[]) => {
+const countingSort = (arr: number[]) => {
   const shift = Math.min(...arr);
   const K = Math.max(...arr);
   const counts = new Array(K).fill(0);
@@ -29,6 +29,8 @@ export const countingSort = (arr: number[]) => {
   // common practice to copy over sorted list into original arr
   // it's fine to just return the sortedArray at this point as well
   for (let i = 0; i < arr.length; i++) {
-      arr[i] = sortedArray[i];
+    arr[i] = sortedArray[i];
   }
-}
+};
+
+export default countingSort;

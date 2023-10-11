@@ -1,17 +1,20 @@
 class TrieNode {
   constructor(
     public children: Map<string, TrieNode> = new Map(),
-    public sentences: Map<string, number> = new Map()
+    public sentences: Map<string, number> = new Map(),
   ) {}
 }
 
 /**
  * @see https://leetcode.com/problems/design-search-autocomplete-system/
  */
-export class AutocompleteSystem {
+class AutocompleteSystem {
   private root = new TrieNode();
+
   private currNode = this.root;
+
   private dead = new TrieNode();
+
   private state = '';
 
   constructor(sentences: string[], times: number[]) {
@@ -68,3 +71,5 @@ export class AutocompleteSystem {
     return result;
   }
 }
+
+export default AutocompleteSystem;

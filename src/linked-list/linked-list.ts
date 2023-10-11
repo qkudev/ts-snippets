@@ -3,7 +3,7 @@ type Nullable<T> = T | null;
 export class ListNode<T = any> {
   constructor(
     public readonly val: T,
-    public next: Nullable<ListNode<T>> = null
+    public next: Nullable<ListNode<T>> = null,
   ) {}
 }
 
@@ -22,7 +22,7 @@ export class LinkedList<T> {
     const [val, ...rest] = values;
     const newNode = new ListNode(val);
     let curr = newNode;
-    rest.forEach(v => {
+    rest.forEach((v) => {
       curr.next = new ListNode(v);
       curr = curr.next;
     });
@@ -76,7 +76,7 @@ export class LinkedList<T> {
       return;
     }
 
-    let j = 0;
+    const j = 0;
     let prev = this.head;
     let curr = this.head;
 

@@ -1,4 +1,4 @@
-import { WeakMap } from '../weak-map';
+import WeakMap from '../weak-map';
 
 describe('WeakMap', () => {
   it('should set and get', () => {

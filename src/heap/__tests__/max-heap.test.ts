@@ -1,4 +1,4 @@
-import { MaxHeap } from '../max-heap';
+import MaxHeap from '../max-heap';
 
 describe('MaxHeap', () => {
   let heap: MaxHeap;
@@ -53,7 +53,6 @@ describe('MaxHeap', () => {
       const max = heap.pop();
       expect(max).toEqual(values.length - i);
       expect(heap.size).toEqual(values.length - i - 1);
-      console.log('size ', heap.size);
     });
 
     expect.assertions(values.length * 3);

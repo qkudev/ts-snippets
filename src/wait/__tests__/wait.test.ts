@@ -1,4 +1,4 @@
-import { wait } from '../wait';
+import wait from '../wait';
 
 describe('wait', () => {
   it('should wait for 100ms', async () => {

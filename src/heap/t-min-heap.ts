@@ -2,12 +2,12 @@ type Comparator<T> = (a: T, b: T) => number;
 
 const nullOrUndefined = (val: unknown) => val === undefined || val === null;
 
-export class TMinHeap<T> {
+class TMinHeap<T> {
   private readonly heap: T[] = [null as any];
 
   private realSize = 0;
 
-  constructor(private readonly _comparator: Comparator<T>) {}
+  constructor(private readonly compareFn: Comparator<T>) {}
 
   private comparator = (a?: T, b?: T) => {
     if (a === undefined) {
@@ -20,7 +20,7 @@ export class TMinHeap<T> {
       return 0;
     }
 
-    return this._comparator(a, b);
+    return this.compareFn(a, b);
   };
 
   public add = (val: T) => {
@@ -31,9 +31,9 @@ export class TMinHeap<T> {
     let parentIndex = Math.floor(index / 2);
 
     while (
-      !nullOrUndefined(this.heap[parentIndex]) &&
-      this.comparator(this.heap[index], this.heap[parentIndex]) < 0 &&
-      index > 1
+      !nullOrUndefined(this.heap[parentIndex])
+      && this.comparator(this.heap[index], this.heap[parentIndex]) < 0
+      && index > 1
     ) {
       this.swap(index, parentIndex);
       index = parentIndex;
@@ -41,9 +41,7 @@ export class TMinHeap<T> {
     }
   };
 
-  public peek = (): T | undefined => {
-    return this.heap[1];
-  };
+  public peek = (): T | undefined => this.heap[1];
 
   public pop = (): T | undefined => {
     if (!this.realSize) {
@@ -60,16 +58,16 @@ export class TMinHeap<T> {
 
     let index = 1;
     while (index <= this.realSize / 2) {
-      let left = index * 2;
-      let right = index * 2 + 1;
+      const left = index * 2;
+      const right = index * 2 + 1;
       if (
-        this.comparator(this.heap[left], this.heap[index]) < 0 ||
-        (!nullOrUndefined(this.heap[right]) &&
-          this.comparator(this.heap[right], this.heap[index]) < 0)
+        this.comparator(this.heap[left], this.heap[index]) < 0
+        || (!nullOrUndefined(this.heap[right])
+          && this.comparator(this.heap[right], this.heap[index]) < 0)
       ) {
         if (
-          this.comparator(this.heap[left], this.heap[right]) >= 0 ||
-          nullOrUndefined(this.heap[right])
+          this.comparator(this.heap[left], this.heap[right]) >= 0
+          || nullOrUndefined(this.heap[right])
         ) {
           this.swap(index, left);
           index = left;
@@ -95,3 +93,5 @@ export class TMinHeap<T> {
     this.heap[j] = temp;
   };
 }
+
+export default TMinHeap;

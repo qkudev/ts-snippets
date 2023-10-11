@@ -1,1 +1,1 @@
-export { WeakMap } from './weak-map';
+export { default } from './weak-map';

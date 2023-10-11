@@ -1,4 +1,4 @@
-import { Queue } from '../queue';
+import Queue from '../queue';
 
 describe('Queue', () => {
   it('enqueues value and has right order to pop values', () => {

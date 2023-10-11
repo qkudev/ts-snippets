@@ -1,1 +1,1 @@
-export { reactiveVar } from './reactive-var';
+export { default } from './reactive-var';

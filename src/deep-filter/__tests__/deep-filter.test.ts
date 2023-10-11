@@ -1,4 +1,4 @@
-import { deepFilter } from '../deep-filter';
+import deepFilter from '../deep-filter';
 
 describe('deepFilter', () => {
   it('should act as normal filter for an array', () => {
@@ -21,8 +21,7 @@ describe('deepFilter', () => {
 
   it('should filter nested array', () => {
     const arr = [1, [2, 3], [4, 5], [6, [7, 8]]];
-    const fn = (val: unknown) =>
-      Number.isInteger(val) && Number(val) > 4 && Number(val) < 8;
+    const fn = (val: unknown) => Number.isInteger(val) && Number(val) > 4 && Number(val) < 8;
 
     const result = deepFilter(arr, fn);
 

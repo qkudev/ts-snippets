@@ -1,4 +1,7 @@
-export class WeakMap<O extends object, V> {
+/**
+ * Dummy WeakMap implementation.
+ */
+class WMap<O extends object, V> {
   private key = Symbol('WeakMap');
 
   public set = (key: O, v: V) => {
@@ -25,3 +28,5 @@ export class WeakMap<O extends object, V> {
     delete o[this.key];
   };
 }
+
+export default WMap;

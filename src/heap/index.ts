@@ -1,4 +1,3 @@
-export { Heap } from './heap';
-export { MaxHeap } from './max-heap';
-export { MinHeap } from './min-heap';
-
+export { default as Heap } from './heap';
+export { default as MaxHeap } from './max-heap';
+export { default as MinHeap } from './min-heap';

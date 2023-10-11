@@ -1,9 +1,9 @@
-import { bubbleSort } from '../bubble-sort';
-import { heapSort } from '../heap-sort';
-import { insertionSort } from '../insertion-sort';
-import { selectionSort } from '../selection-sort';
-import { quickSort } from '../quick-sort';
-import { countingSort } from '../counting-sort';
+import bubbleSort from '../bubble-sort';
+import countingSort from '../counting-sort';
+import heapSort from '../heap-sort';
+import insertionSort from '../insertion-sort';
+import quickSort from '../quick-sort';
+import selectionSort from '../selection-sort';
 
 const isArraySorted = (arr: number[]) => {
   for (let i = 0; i < arr.length - 1; i++) {
@@ -16,16 +16,14 @@ const isArraySorted = (arr: number[]) => {
 };
 
 describe('sorts', () => {
-  const getRandomInt = () =>
-    Math.floor(Math.random() * 1000) * (Math.random() > 0.5 ? 1 : -1);
+  const getRandomInt = () => Math.floor(Math.random() * 1000) * (Math.random() > 0.5 ? 1 : -1);
 
-  const getRandomArrays = () =>
-    new Array(10).fill(0).map(() => new Array(100).fill(0).map(getRandomInt));
+  const getRandomArrays = () => new Array(10).fill(0).map(() => new Array(100).fill(0).map(getRandomInt));
 
   const testSort = (sort: (arr: number[]) => number[]) => {
     const arrays: number[][] = getRandomArrays();
 
-    arrays.forEach(arr => {
+    arrays.forEach((arr) => {
       sort(arr);
 
       expect(isArraySorted(arr)).toBe(true);
