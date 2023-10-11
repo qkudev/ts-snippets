@@ -61,7 +61,7 @@ class QueryBatcher<ID extends string | number, T> {
     /**
      * Function that queries multiple entries by their ID array
      */
-    private readonly queryMultiple: (payloads: ID[]) => Promise<T[]>,
+    private readonly queryMultiple: (ids: ID[]) => Promise<T[]>,
 
     /**
      * Milliseconds to wait before next query
@@ -78,16 +78,16 @@ class QueryBatcher<ID extends string | number, T> {
 
   /**
    * Adds a task to the query batcher and returns a Promise that resolves with the result.
-   * @param payload - The query parameters.
+   * @param id - The query parameters.
    * @returns A Promise that resolves with the query result.
    */
-  public query = (payload: ID): Promise<T> =>
+  public query = (id: ID): Promise<T> =>
     new Promise<T>((resolve) => {
-      this.addTask(payload, resolve);
+      this.addTask(id, resolve);
     });
 
-  private addTask = (payload: ID, cb: TaskCallback<T>) => {
-    const task: Task<ID, T> = Object.assign(cb, { id: payload });
+  private addTask = (id: ID, callback: TaskCallback<T>) => {
+    const task: Task<ID, T> = Object.assign(callback, { id });
     this.queue.push(task);
 
     // Do not make it zalgo
