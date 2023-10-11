@@ -54,12 +54,14 @@ class TrieNode {
   }
 }
 
+type MemoizedFunction<F extends Function> = F & { reset: () => void };
+
 /**
  * Memoizes the given function using a trie data structure.
  * @param f - The function to memoize.
  * @returns The memoized function.
  */
-const memoize = <F extends Function>(f: F): F & { reset: () => void } => {
+const memoize = <F extends Function>(f: F): MemoizedFunction<F> => {
   let root = new TrieNode();
   const cache = new WeakMap<TrieNode, any>();
 
