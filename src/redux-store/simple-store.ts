@@ -1,12 +1,12 @@
-interface Action {
+export interface Action {
   type: string;
 }
 
-type Reducer<S, A extends Action> = (state: S, action: A) => S;
+export type Reducer<S, A extends Action> = (state: S, action: A) => S;
 
-type Listener<S> = (state: S) => void;
+export type Listener<S> = (state: S) => void;
 
-type Unsubscribe = () => void;
+export type Unsubscribe = () => void;
 
 export interface Store<S, A extends Action = Action> {
   dispatch: (action: A) => void;
@@ -16,13 +16,13 @@ export interface Store<S, A extends Action = Action> {
 
 export const createStore = <S, A extends Action = Action>(
   reducer: Reducer<S, A>,
-  initialState: S
+  initialState: S,
 ): Store<S, A> => {
   let state = initialState;
   const listeners = new Set<Listener<S>>();
 
   const notifyListeners = () => {
-    listeners.forEach(listener => {
+    listeners.forEach((listener) => {
       listener(state);
     });
   };

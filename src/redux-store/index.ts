@@ -1,1 +1,1 @@
-export {createStore} from './simple-store';
+export { createStore, Listener, Reducer, Action } from './simple-store';

@@ -1,5 +1,5 @@
-import { wait } from '../../wait';
-import { TaskScheduler } from '../task-scheduler';
+import wait from '../../wait';
+import TaskScheduler from '../task-scheduler';
 
 jest.setTimeout(20000);
 
@@ -9,7 +9,6 @@ describe('TaskQueue', () => {
     const createTask = (ms: number) => {
       const idx = i++;
       return async (): Promise<number> => {
-        console.log('started ', idx);
         await wait(ms);
         return idx;
       };
@@ -17,17 +16,17 @@ describe('TaskQueue', () => {
 
     const taskQueue = new TaskScheduler();
     let j = 1;
-    const logComplete: any = ([i]: number[]) => {
-      expect(i).toEqual(j);
+    const logComplete: any = ([idx]: number[]) => {
+      expect(idx).toEqual(j);
       j++;
     };
-    taskQueue.add(createTask(2000)).then(logComplete);
-    taskQueue.add(createTask(3000)).then(logComplete);
-    taskQueue.add(createTask(2000)).then(logComplete);
-    await wait(4000);
+    taskQueue.add(createTask(200)).then(logComplete);
+    taskQueue.add(createTask(300)).then(logComplete);
+    taskQueue.add(createTask(200)).then(logComplete);
+    await wait(400);
 
     taskQueue.add(createTask(3000)).then(logComplete);
-    await wait(10000);
+    await wait(1000);
     expect(true).toBe(true);
   });
 
@@ -36,7 +35,6 @@ describe('TaskQueue', () => {
     const createTask = (ms: number) => {
       const idx = i++;
       return async (): Promise<number> => {
-        console.log('started ', idx);
         await wait(ms);
         return idx;
       };
@@ -47,7 +45,7 @@ describe('TaskQueue', () => {
       expect(result).toEqual([1, 2, 3]);
     };
     await taskQueue
-      .add(createTask(2000), createTask(2000), createTask(2000))
+      .add(createTask(200), createTask(200), createTask(200))
       .then(logComplete);
   });
 });

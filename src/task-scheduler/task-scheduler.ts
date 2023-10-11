@@ -1,4 +1,4 @@
-import { Queue } from '../queue';
+import Queue from '../queue';
 
 type SyncTask = () => void;
 type AsyncTask = () => Promise<void>;
@@ -7,22 +7,21 @@ type Task = SyncTask | AsyncTask;
 /**
  * Runs given tasks in sequence
  */
-export class TaskScheduler {
+class TaskScheduler {
   private readonly queue: Queue<Task> = new Queue<Task>();
 
   private running = false;
 
   public add = (...tasks: Task[]) => Promise.all(tasks.map(this.pushToQueue));
 
-  private pushToQueue = (task: Task) =>
-    new Promise<void>((resolve) => {
-      const wrapped = async () => resolve(await task());
-      this.queue.push(wrapped);
+  private pushToQueue = (task: Task) => new Promise<void>((resolve) => {
+    const wrapped = async () => resolve(await task());
+    this.queue.push(wrapped);
 
-      if (!this.running) {
-        this.run();
-      }
-    });
+    if (!this.running) {
+      this.run();
+    }
+  });
 
   public clear = () => {
     this.queue.clear();
@@ -37,3 +36,5 @@ export class TaskScheduler {
     this.running = false;
   };
 }
+
+export default TaskScheduler;
