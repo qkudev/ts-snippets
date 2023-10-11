@@ -53,4 +53,18 @@ describe('reactive var', () => {
     expect(listener).toHaveBeenCalledTimes(0);
     expect(reactive()).toEqual({ a: 1 });
   });
+
+  it('should pipe to other value', () => {
+    const x = reactiveVar(1);
+    const y = x.pipe((v) => v * 2);
+
+    const listener = jest.fn();
+    y.onChange(listener);
+
+    x(2);
+
+    expect(y()).toEqual(4);
+    expect(listener).toHaveBeenCalledWith(4);
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
 });
