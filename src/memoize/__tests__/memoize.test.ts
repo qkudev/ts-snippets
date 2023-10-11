@@ -51,4 +51,17 @@ describe('memoize', () => {
     expect(calcMock).toHaveBeenCalledTimes(1);
     expect(res1).toEqual(res2);
   });
+
+  it('should reset cache with method', () => {
+    const fn = jest.fn();
+    const memoized = memoize(fn);
+    const arg = { a: 1 };
+
+    memoized(arg);
+    memoized.reset();
+    memoized(arg);
+
+    expect(fn).toHaveBeenCalledWith(arg);
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
 });
