@@ -114,7 +114,15 @@ class QueryBatcher<ID extends string | number, T> {
       [[], []]
     );
 
-    const resultMap: Record<ID, T> = {} as Record<ID, T>;
+    // Fulfill results from cache before making a query
+    // because cache could be changed in the meantime
+    const resultMap = cachedIds.reduce<Record<ID, T>>(
+      (acc, id) => {
+        acc[id] = cache!.get(id);
+        return acc;
+      },
+      {} as Record<ID, T>
+    );
     const query = this.queryMultiple(notCachedIds).then((result) => {
       notCachedIds.forEach((id, i) => {
         resultMap[id] = result[i];
@@ -122,10 +130,6 @@ class QueryBatcher<ID extends string | number, T> {
         if (cache) {
           cache.set(id, result[i]);
         }
-      });
-
-      cachedIds.forEach((id) => {
-        resultMap[id] = this.options.cache!.get(id);
       });
 
       // Make sure that tasks are called in the same order as they were added
