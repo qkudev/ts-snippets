@@ -7,7 +7,9 @@ describe('QueryBatcher', () => {
   let qb = new QueryBatcher(batchedCallback, timeout);
 
   beforeEach(() => {
-    batchedCallback = jest.fn().mockImplementation((val) => Promise.resolve(val));
+    batchedCallback = jest
+      .fn()
+      .mockImplementation((val) => Promise.resolve(val));
     qb = new QueryBatcher(batchedCallback, timeout);
   });
 
@@ -83,5 +85,81 @@ describe('QueryBatcher', () => {
 
     expect(batchedCallback).toHaveBeenCalledTimes(2);
     expect(batchedCallback).toHaveBeenCalledWith([2]);
+  });
+
+  it('should use cache', async () => {
+    const cache = new Map();
+    const cacheSpy = jest.spyOn(cache, 'get');
+    batchedCallback.mockImplementationOnce((ids: number[]) =>
+      Promise.resolve(
+        ids.map((id) => ({
+          id,
+          username: `user${id}`,
+        }))
+      )
+    );
+    qb = new QueryBatcher(batchedCallback, timeout, {
+      debounce: false,
+      cache,
+    });
+
+    const u1 = await qb.query(1);
+
+    expect(batchedCallback).toHaveBeenCalledWith([1]);
+    expect(u1).toEqual({
+      id: 1,
+      username: 'user1',
+    });
+
+    const [u1Cached] = await Promise.all([qb.query(1), qb.query(2)]);
+
+    expect(batchedCallback).toHaveBeenCalledWith([2]);
+    expect(cacheSpy).toHaveBeenCalledWith(1);
+    // From cache, e.g. ref equality
+    // Because new call to batchedCallback would make the same object but with new ref
+    expect(u1Cached).toBe(u1);
+  });
+
+  it('should handle if cache has been dropped', async () => {
+    const cache = new Map();
+    batchedCallback.mockImplementation((ids: number[]) =>
+      Promise.resolve(
+        ids.map((id) => ({
+          id,
+          username: `user${id}`,
+        }))
+      )
+    );
+    qb = new QueryBatcher(batchedCallback, timeout, {
+      debounce: false,
+      cache,
+    });
+
+    const u1 = await qb.query(1);
+
+    expect(batchedCallback).toHaveBeenCalledWith([1]);
+    expect(u1).toEqual({
+      id: 1,
+      username: 'user1',
+    });
+
+    cache.clear();
+
+    const [u1New] = await Promise.all([qb.query(1), qb.query(2)]);
+
+    expect(batchedCallback).toHaveBeenCalledWith([1, 2]);
+    // From batchedCallback, e.g. new object
+    expect(u1New).toEqual({
+      id: 1,
+      username: 'user1',
+    });
+    expect(u1New).not.toBe(u1);
+  });
+
+  it('should not duplicate queries', async () => {
+    await Promise.all([qb.query(1), qb.query(1), qb.query(2)]);
+
+    expect(batchedCallback).toHaveBeenCalledTimes(1);
+    expect(batchedCallback).toHaveBeenCalledWith([1, 2]);
   });
 });
