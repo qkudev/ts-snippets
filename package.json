@@ -15,6 +15,7 @@
     "build": "tsdx build",
     "test": "jest",
     "lint": "eslint --fix ./src",
+    "lint:ts": "tsc --noEmit",
     "test:cov": "jest --coverage"
   },
   "peerDependencies": {},
