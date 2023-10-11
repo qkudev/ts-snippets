@@ -1,14 +1,13 @@
 /**
  * Stack-ordered container
  */
-export class Stack<T> {
+class Stack<T> {
   private state: T[] = [];
 
   /**
    * Creates stack from given iterable
    */
-  public static readonly from = <V>(iterable: Iterable<V>) =>
-    new Stack<V>(iterable);
+  public static readonly from = <V>(iterable: Iterable<V>) => new Stack<V>(iterable);
 
   /**
    * Creates stack. Optional "iterable" arg will be used for initial state
@@ -59,7 +58,7 @@ export class Stack<T> {
   /**
    * Returns iterator for the state
    */
-  public *[Symbol.iterator](): Iterator<T> {
+  public* [Symbol.iterator](): Iterator<T> {
     const copy: T[] = [...this.state];
 
     while (copy.length) {
@@ -81,3 +80,5 @@ export class Stack<T> {
     return !this.state.length;
   }
 }
+
+export default Stack;

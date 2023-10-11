@@ -1,1 +1,1 @@
-export { AutocompleteSystem } from './autocomplete-system';
+export { default } from './autocomplete-system';

@@ -1,1 +1,1 @@
-export { promisePool } from './promise-pool';
+export { default } from './promise-pool';

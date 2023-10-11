@@ -1,1 +1,1 @@
-export { selectionSort } from './selection-sort';
+export { default } from './selection-sort';

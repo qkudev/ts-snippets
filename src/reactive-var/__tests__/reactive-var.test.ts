@@ -1,4 +1,4 @@
-import { reactiveVar } from '../reactive-var';
+import reactiveVar from '../reactive-var';
 
 describe('reactive var', () => {
   it('should set initial state', () => {
@@ -43,7 +43,7 @@ describe('reactive var', () => {
   it('should use given equality fn', () => {
     const reactive = reactiveVar(
       { a: 1 },
-      (a, b) => JSON.stringify(a) === JSON.stringify(b)
+      (a, b) => JSON.stringify(a) === JSON.stringify(b),
     );
     const listener = jest.fn();
     reactive.onChange(listener);

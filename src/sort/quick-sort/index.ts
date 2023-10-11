@@ -1,1 +1,1 @@
-export { quickSort } from './quick-sort';
+export { default } from './quick-sort';

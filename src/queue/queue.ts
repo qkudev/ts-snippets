@@ -1,16 +1,15 @@
-import { Stack } from '../stack';
+import Stack from '../stack';
 
 /**
  * Queue-ordered container.
  */
-export class Queue<T> {
+class Queue<T> {
   // Using 2 stack to get amortized O(n) for n operations of push/pop
   private in = new Stack<T>();
 
   private out = new Stack<T>();
 
-  public static readonly from = <V>(iterable: Iterable<V>) =>
-    new Queue<V>(iterable);
+  public static readonly from = <V>(iterable: Iterable<V>) => new Queue<V>(iterable);
 
   /**
    * Creates queue. Optional "iterable" arg will be used for initial state
@@ -86,7 +85,7 @@ export class Queue<T> {
   /**
    * Returns iterator for the state
    */
-  public *[Symbol.iterator](): Iterator<T> {
+  public* [Symbol.iterator](): Iterator<T> {
     const copy: T[] = [];
 
     for (let i = 0; i < this.size; i++) {
@@ -112,3 +111,5 @@ export class Queue<T> {
     return !this.size;
   }
 }
+
+export default Queue;

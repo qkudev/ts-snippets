@@ -1,1 +1,1 @@
-export { binarySearch } from './binary-search';
+export { default } from './binary-search';

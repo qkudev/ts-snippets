@@ -1,9 +1,9 @@
-import { wait } from '../../wait';
-import { debounce } from '../debounce';
+import wait from '../../wait';
+import debounce from '../debounce';
 
 describe('debounce', () => {
   const ms = 100;
-  let f = jest.fn();
+  const f = jest.fn();
   let debounced = debounce(f, ms);
 
   beforeEach(async () => {
@@ -28,7 +28,6 @@ describe('debounce', () => {
   });
 
   it('should call once wth latest args (debounced)', async () => {
-    console.log('3');
     debounced(1);
     debounced(2);
     debounced(3);

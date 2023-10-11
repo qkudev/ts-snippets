@@ -6,7 +6,7 @@ class DLLNode<K, V> {
     public key: K,
     public val: V,
     public prev: Nullable<DLLNode<K, V>> = null,
-    public next: Nullable<DLLNode<K, V>> = null
+    public next: Nullable<DLLNode<K, V>> = null,
   ) {}
 }
 
@@ -16,18 +16,19 @@ const TAIL = Symbol('tail');
 /**
  * LRU cache wit doubly-linked list
  */
-export class LRUCache<K extends Key, V> {
+class LRUCache<K extends Key, V> {
   private map = new Map<K, DLLNode<K, V>>();
 
   // Dummy node. real head is head.next
   public head = new DLLNode<K, V>(
     (HEAD as unknown) as K,
-    (null as unknown) as V
+    (null as unknown) as V,
   );
+
   // Dummy node. real tail is tail.prev
   public tail = new DLLNode<K, V>(
     (TAIL as unknown) as K,
-    (null as unknown) as V
+    (null as unknown) as V,
   );
 
   constructor(public readonly capacity: number) {
@@ -72,8 +73,11 @@ export class LRUCache<K extends Key, V> {
     this.tail.prev = node;
   };
 
+  // eslint-disable-next-line class-methods-use-this
   private remove = (node: DLLNode<K, V>) => {
     node.prev!.next = node.next;
     node.next!.prev = node.prev;
   };
 }
+
+export default LRUCache;

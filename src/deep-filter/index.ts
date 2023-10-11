@@ -1,1 +1,1 @@
-export { deepFilter } from './deep-filter';
+export { default } from './deep-filter';

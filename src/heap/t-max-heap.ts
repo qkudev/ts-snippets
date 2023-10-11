@@ -2,12 +2,12 @@ type Comparator<T> = (a: T, b: T) => number;
 
 const nullOrUndefined = (val: unknown) => val === undefined || val === null;
 
-export class TMaxHeap<T> {
+class TMaxHeap<T> {
   private readonly maxHeap: T[] = [null as any];
 
   private realSize = 0;
 
-  constructor(private readonly _comparator: Comparator<T>) {}
+  constructor(private readonly compareFn: Comparator<T>) {}
 
   private comparator = (a?: T, b?: T) => {
     if (a === undefined) {
@@ -20,7 +20,7 @@ export class TMaxHeap<T> {
       return 0;
     }
 
-    return this._comparator(a, b);
+    return this.compareFn(a, b);
   };
 
   public add = (val: T) => {
@@ -31,9 +31,9 @@ export class TMaxHeap<T> {
     let parentIndex = Math.floor(index / 2);
 
     while (
-      !nullOrUndefined(this.maxHeap[parentIndex]) &&
-      this.comparator(this.maxHeap[index], this.maxHeap[parentIndex]) > 0 &&
-      index > 1
+      !nullOrUndefined(this.maxHeap[parentIndex])
+      && this.comparator(this.maxHeap[index], this.maxHeap[parentIndex]) > 0
+      && index > 1
     ) {
       this.swap(index, parentIndex);
       index = parentIndex;
@@ -41,9 +41,7 @@ export class TMaxHeap<T> {
     }
   };
 
-  public peek = (): T | undefined => {
-    return this.maxHeap[1];
-  };
+  public peek = (): T | undefined => this.maxHeap[1];
 
   public pop = (): T | undefined => {
     if (!this.realSize) {
@@ -60,16 +58,16 @@ export class TMaxHeap<T> {
 
     let index = 1;
     while (index <= this.realSize / 2) {
-      let left = index * 2;
-      let right = index * 2 + 1;
+      const left = index * 2;
+      const right = index * 2 + 1;
       if (
-        this.maxHeap[right] !== undefined &&
-        (this.comparator(this.maxHeap[left], this.maxHeap[index]) > 0 ||
-          this.comparator(this.maxHeap[right], this.maxHeap[index]) > 0)
+        this.maxHeap[right] !== undefined
+        && (this.comparator(this.maxHeap[left], this.maxHeap[index]) > 0
+          || this.comparator(this.maxHeap[right], this.maxHeap[index]) > 0)
       ) {
         if (
-          this.comparator(this.maxHeap[left], this.maxHeap[right]) >= 0 ||
-          this.maxHeap[right] === undefined
+          this.comparator(this.maxHeap[left], this.maxHeap[right]) >= 0
+          || this.maxHeap[right] === undefined
         ) {
           this.swap(index, left);
           index = left;
@@ -95,3 +93,5 @@ export class TMaxHeap<T> {
     this.maxHeap[j] = temp;
   };
 }
+
+export default TMaxHeap;

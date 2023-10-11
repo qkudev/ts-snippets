@@ -1,4 +1,4 @@
-import { wait } from '../wait';
+import wait from '../wait';
 
 type TaskCallback<Result> = (result: Result) => void;
 type Task<Payload, Result> = [Payload, TaskCallback<Result>];
@@ -29,9 +29,11 @@ const defaultOptions: Required<Options> = {
  * it will batch these 3 queries and make only one actual API call.
  * For usage examples, see `__tests__` folder.
  */
-export class QueryBatcher<Param, Result> {
+class QueryBatcher<Param, Result> {
   private canCall = true;
+
   private queue: Task<Param, Result>[] = [];
+
   private options: Required<Options>;
 
   constructor(
@@ -45,7 +47,7 @@ export class QueryBatcher<Param, Result> {
      */
     private readonly ms: number,
 
-    options: Options = defaultOptions
+    options: Options = defaultOptions,
   ) {
     this.options = {
       ...defaultOptions,
@@ -53,11 +55,14 @@ export class QueryBatcher<Param, Result> {
     };
   }
 
-  public query = (payload: Param): Promise<Result> => {
-    return new Promise<Result>(resolve => {
-      this.addTask(payload, resolve);
-    });
-  };
+  /**
+   * Adds a task to the query batcher and returns a Promise that resolves with the result.
+   * @param payload - The query parameters.
+   * @returns A Promise that resolves with the query result.
+   */
+  public query = (payload: Param): Promise<Result> => new Promise<Result>((resolve) => {
+    this.addTask(payload, resolve);
+  });
 
   private addTask = (payload: Param, cb: TaskCallback<Result>) => {
     this.queue.push([payload, cb]);
@@ -75,7 +80,7 @@ export class QueryBatcher<Param, Result> {
     const tasks = [...this.queue];
     this.queue = [];
     const payloads = tasks.map(([payload]) => payload);
-    const query = this.queryMultiple(payloads).then(result => {
+    const query = this.queryMultiple(payloads).then((result) => {
       tasks.forEach(([, cb], i) => {
         cb(result[i]);
       });
@@ -92,3 +97,5 @@ export class QueryBatcher<Param, Result> {
     this.run();
   };
 }
+
+export default QueryBatcher;

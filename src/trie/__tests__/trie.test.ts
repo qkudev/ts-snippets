@@ -1,4 +1,4 @@
-import { Trie } from '../trie';
+import Trie from '../trie';
 
 type Item = {
   id: number;
@@ -36,7 +36,7 @@ describe('Trie', () => {
     trie.remove(toRemove);
     expect(trie.has(toRemove)).toBe(false);
 
-    const hasRest = rest.every(item => trie.has(item));
+    const hasRest = rest.every((item) => trie.has(item));
     expect(hasRest).toBe(true);
   });
 
@@ -46,7 +46,7 @@ describe('Trie', () => {
     const prefix = 'as';
     const result = trie.find(prefix);
     const resultByFilter = data
-      .filter(item => item.title.startsWith(prefix))
+      .filter((item) => item.title.startsWith(prefix))
       .reverse();
     expect(result).toStrictEqual(resultByFilter);
 

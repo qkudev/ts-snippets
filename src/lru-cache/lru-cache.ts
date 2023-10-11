@@ -3,7 +3,7 @@ type TKey = string | Symbol | number;
 /**
  * Cache with Least recently used strategy
  */
-export class LRUCache<T> {
+class LRUCache<T> {
   private values: Map<TKey, T> = new Map<TKey, T>();
 
   constructor(public readonly capacity: number) {}
@@ -38,3 +38,5 @@ export class LRUCache<T> {
     this.values.set(key, value);
   }
 }
+
+export default LRUCache;

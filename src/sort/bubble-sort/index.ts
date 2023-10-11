@@ -1,1 +1,1 @@
-export { bubbleSort } from './bubble-sort';
+export { default } from './bubble-sort';

@@ -1,1 +1,1 @@
-export { Trie } from './trie';
+export { default } from './trie';

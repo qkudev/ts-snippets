@@ -1,4 +1,4 @@
-export class MaxHeap {
+class MaxHeap {
   private readonly maxHeap: number[] = [0];
 
   private realSize = 0;
@@ -17,9 +17,7 @@ export class MaxHeap {
     }
   };
 
-  public peek = (): number | undefined => {
-    return this.maxHeap[1];
-  };
+  public peek = (): number | undefined => this.maxHeap[1];
 
   public pop = (): number | undefined => {
     const removeElement = this.maxHeap[1];
@@ -28,15 +26,15 @@ export class MaxHeap {
 
     let index = 1;
     while (index <= this.realSize / 2) {
-      let left = index * 2;
-      let right = index * 2 + 1;
+      const left = index * 2;
+      const right = index * 2 + 1;
       if (
-        this.maxHeap[left] > this.maxHeap[index] ||
-        this.maxHeap[right] > this.maxHeap[index]
+        this.maxHeap[left] > this.maxHeap[index]
+        || this.maxHeap[right] > this.maxHeap[index]
       ) {
         if (
-          this.maxHeap[left] >= this.maxHeap[right] ||
-          this.maxHeap[right] === undefined
+          this.maxHeap[left] >= this.maxHeap[right]
+          || this.maxHeap[right] === undefined
         ) {
           this.swap(index, left);
           index = left;
@@ -62,3 +60,5 @@ export class MaxHeap {
     this.maxHeap[j] = temp;
   };
 }
+
+export default MaxHeap;

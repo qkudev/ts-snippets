@@ -1,7 +1,7 @@
 /**
  * Debounce wrapper. Returns wrapped function with "clear" method to cancel delayed call
  */
-export const debounce = <F extends Function>(f: F, ms: number) => {
+const debounce = <F extends Function>(f: F, ms: number) => {
   let timeout: NodeJS.Timeout | null = null;
 
   const clear = () => {
@@ -22,3 +22,5 @@ export const debounce = <F extends Function>(f: F, ms: number) => {
 
   return call as unknown as F & { clear: () => void };
 };
+
+export default debounce;

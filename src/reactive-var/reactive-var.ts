@@ -8,17 +8,17 @@ function defaultEqualityFn<T>(a: T, b:T) {
   return a === b;
 }
 
-export function reactiveVar<T>(initialState: T, equalityFn = defaultEqualityFn<T>): ReactiveVar<T> {
+function reactiveVar<T>(initialState: T, equalityFn = defaultEqualityFn<T>): ReactiveVar<T> {
   const listeners = new Set<Listener<T>>();
   let state = initialState;
 
-  function notifyListeners () {
-    listeners.forEach(listener => {
+  function notifyListeners() {
+    listeners.forEach((listener) => {
       listener(state);
-    })
+    });
   }
 
-  function setState (next: T) {
+  function setState(next: T) {
     if (!equalityFn(state, next)) {
       state = next;
 
@@ -48,3 +48,5 @@ export function reactiveVar<T>(initialState: T, equalityFn = defaultEqualityFn<T
 
   return call as ReactiveVar<T>;
 }
+
+export default reactiveVar;

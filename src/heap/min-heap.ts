@@ -1,4 +1,4 @@
-export class MinHeap {
+class MinHeap {
   private minHeap: number[] = [];
 
   private realSize: number = 0;
@@ -31,9 +31,7 @@ export class MinHeap {
     }
   };
 
-  public peek = (): number | undefined => {
-    return this.minHeap[1];
-  };
+  public peek = (): number | undefined => this.minHeap[1];
 
   public pop = (): number | undefined => {
     if (this.realSize < 1) {
@@ -53,12 +51,12 @@ export class MinHeap {
       const left = index * 2;
       const right = index * 2 + 1;
       if (
-        this.minHeap[index] > this.minHeap[left] ||
-        this.minHeap[index] > this.minHeap[right]
+        this.minHeap[index] > this.minHeap[left]
+        || this.minHeap[index] > this.minHeap[right]
       ) {
         if (
-          this.minHeap[left] < this.minHeap[right] ||
-          this.minHeap[right] === undefined
+          this.minHeap[left] < this.minHeap[right]
+          || this.minHeap[right] === undefined
         ) {
           this.swap(index, left);
           index = left;
@@ -84,3 +82,5 @@ export class MinHeap {
     this.minHeap[j] = temp;
   };
 }
+
+export default MinHeap;

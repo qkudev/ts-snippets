@@ -4,13 +4,13 @@ export class ListNode<T = any> {
   constructor(
     public readonly val: T,
     public next: Nullable<ListNode<T>> = null,
-    public prev: Nullable<ListNode<T>> = null
+    public prev: Nullable<ListNode<T>> = null,
   ) {}
 }
 
-export type DoubleLinkedListNode<T> = ListNode<T>
+export type DoubleLinkedListNode<T> = ListNode<T>;
 
-export class DoubleLinkedList<T> {
+class DoubleLinkedList<T> {
   private head: Nullable<ListNode<T>> = null;
 
   constructor(...values: T[]) {
@@ -78,7 +78,7 @@ export class DoubleLinkedList<T> {
       return;
     }
 
-    let j = 0;
+    const j = 0;
     let prev = this.head;
     let curr = this.head;
 
@@ -115,10 +115,12 @@ export class DoubleLinkedList<T> {
   }
 
   *[Symbol.iterator]() {
-    let node = this.head;
+    const node = this.head;
 
     while (node) {
       yield node.val;
     }
   }
 }
+
+export default DoubleLinkedList;

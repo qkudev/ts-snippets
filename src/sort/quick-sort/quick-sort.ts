@@ -44,7 +44,7 @@ function recursionQuickSort(arr: number[], low: number, high: number) {
   if (low < high) {
     // pi is partitioning index, arr[p]
     // is now at right place
-    let pi = partition(arr, low, high);
+    const pi = partition(arr, low, high);
 
     // Separately sort elements before
     // partition and after partition
@@ -59,5 +59,6 @@ function recursionQuickSort(arr: number[], low: number, high: number) {
  * Quick sort impl
  * Mutates given array (!)
  */
-export const quickSort = (arr: number[]): number[] =>
-  recursionQuickSort(arr, 0, arr.length - 1);
+const quickSort = (arr: number[]): number[] => recursionQuickSort(arr, 0, arr.length - 1);
+
+export default quickSort;

@@ -1,1 +1,1 @@
-export { countingSort } from './counting-sort';
+export { default } from './counting-sort';

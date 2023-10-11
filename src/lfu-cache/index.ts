@@ -1,1 +1,2 @@
-export { LFUCache } from './lfu-cache';
+export { default } from './lfu-cache';
+

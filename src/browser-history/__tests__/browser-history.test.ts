@@ -1,4 +1,4 @@
-import { BrowserHistory } from '../browser-history';
+import BrowserHistory from '../browser-history';
 
 describe('BrowserHistory', () => {
   let history: BrowserHistory;

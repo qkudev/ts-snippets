@@ -1,4 +1,7 @@
-export class WeakSet<T extends object = any> {
+/**
+ * Dummy WeakSet implementation.
+ */
+class WSet<T extends object = any> {
   private _key = Symbol('WeakSet');
 
   public add = (value: T) => {
@@ -14,13 +17,14 @@ export class WeakSet<T extends object = any> {
     });
   };
 
-  public has = (o: T) => {
+  public has = (o: T) =>
     // @ts-ignore
-    return !!o[this._key];
-  };
+    !!o[this._key];
 
   public delete = (o: T) => {
     // @ts-ignore
     delete o[this._key];
   };
 }
+
+export default WSet;

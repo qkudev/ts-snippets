@@ -2,11 +2,12 @@ type Nullable<T> = T | null;
 
 class TNode {
   public children: Map<string, TNode> = new Map();
+
   public end: boolean = false;
 
   constructor(
     public readonly key: Nullable<string>,
-    public parent: Nullable<TNode> = null
+    public parent: Nullable<TNode> = null,
   ) {}
 
   public get hasChildren(): boolean {
@@ -19,8 +20,9 @@ type FilterFlags<Base, Condition> = {
 };
 type KeysByType<Base, Condition> = FilterFlags<Base, Condition>[keyof Base];
 
-export class Trie<TData> {
+class Trie<TData> {
   private readonly root = new TNode(null);
+
   private readonly dataMap = new WeakMap<TNode, TData>();
 
   constructor(private readonly idx: KeysByType<TData, string>, data?: TData[]) {
@@ -136,3 +138,5 @@ export class Trie<TData> {
     return result;
   };
 }
+
+export default Trie;

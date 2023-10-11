@@ -1,1 +1,1 @@
-export { QueryBatcher } from './query-batcher';
+export { default } from './query-batcher';

@@ -1,4 +1,9 @@
-export const insertionSort = (arr: number[]) => {
+/**
+ * Sorts an array of numbers using the insertion sort algorithm.
+ * @param arr - The array of numbers to be sorted.
+ * @returns The sorted array of numbers.
+ */
+const insertionSort = (arr: number[]) => {
   for (let i = 1; i < arr.length; i++) {
     let currentIdx = i;
 
@@ -11,4 +16,6 @@ export const insertionSort = (arr: number[]) => {
   }
 
   return arr;
-}
+};
+
+export default insertionSort;

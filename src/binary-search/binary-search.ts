@@ -1,7 +1,7 @@
 /**
  * Binary search implementation for number array
  */
-export const binarySearch = (array: number[], target: number): number => {
+const binarySearch = (array: number[], target: number): number => {
   let start = 0;
   let end = array.length - 1;
   let result = -1;
@@ -25,3 +25,5 @@ export const binarySearch = (array: number[], target: number): number => {
 
   return result;
 };
+
+export default binarySearch;

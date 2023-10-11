@@ -1,1 +1,1 @@
-export { PriorityQueue } from './priority-queue';
+export { default } from './priority-queue';

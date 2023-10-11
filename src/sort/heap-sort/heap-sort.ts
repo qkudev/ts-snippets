@@ -1,7 +1,12 @@
-export const heapSort = (arr: number[]) => {
+/**
+ * Sorts an array of numbers using the Heap Sort algorithm.
+ * @param arr - The array of numbers to be sorted.
+ * @returns The sorted array of numbers.
+ */
+const heapSort = (arr: number[]) => {
   const maxHeapify = (_arr: number[], heapSize: number, idx: number) => {
-    let left = 2 * idx + 1;
-    let right = 2 * idx + 2;
+    const left = 2 * idx + 1;
+    const right = 2 * idx + 2;
     let largest = idx;
     if (left < heapSize && _arr[left] > _arr[largest]) {
       largest = left;
@@ -9,7 +14,7 @@ export const heapSort = (arr: number[]) => {
     if (right < heapSize && _arr[right] > _arr[largest]) {
       largest = right;
     }
-    if (largest != idx) {
+    if (largest !== idx) {
       const temp = _arr[idx];
       _arr[idx] = _arr[largest];
       _arr[largest] = temp;
@@ -23,12 +28,12 @@ export const heapSort = (arr: number[]) => {
 
   for (let i = arr.length - 1; i > 0; i--) {
     // swap last element with first element
-    const temp = arr[i];
-    arr[i] = arr[0];
-    arr[0] = temp;
+    [arr[0], arr[i]] = [arr[i], arr[0]];
     // note that we reduce the heap size by 1 every iteration
     maxHeapify(arr, i, 0);
   }
 
   return arr;
 };
+
+export default heapSort;

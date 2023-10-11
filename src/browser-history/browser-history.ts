@@ -1,9 +1,9 @@
-import { Stack } from '../stack';
+import Stack from '../stack';
 
 /**
  * @see https://leetcode.com/problems/design-browser-history/description/
  */
-export class BrowserHistory {
+class BrowserHistory {
   private _stackBack: Stack<string>;
 
   private stackForward = new Stack<string>();
@@ -45,3 +45,5 @@ export class BrowserHistory {
     return this._stackBack.peek()!;
   };
 }
+
+export default BrowserHistory;

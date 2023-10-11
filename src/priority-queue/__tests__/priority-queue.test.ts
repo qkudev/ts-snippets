@@ -1,4 +1,4 @@
-import { PriorityQueue } from '../priority-queue';
+import PriorityQueue from '../priority-queue';
 
 type Element = {
   value: string;

@@ -4,6 +4,7 @@
  */
 class TrieNode {
   private map = new Map<any, unknown>();
+
   private weakMap = new WeakMap<any, unknown>();
 
   public has(key: any) {
@@ -30,7 +31,7 @@ class TrieNode {
 /**
  * Memoizes given fn effectively with `Trie` cache
  */
-export const memoize = <F extends Function>(f: F): F => {
+const memoize = <F extends Function>(f: F): F => {
   const root = new TrieNode();
   const cache = new WeakMap<TrieNode, any>();
 
@@ -50,3 +51,5 @@ export const memoize = <F extends Function>(f: F): F => {
     return cache.get(node);
   }) as unknown) as F;
 };
+
+export default memoize;
