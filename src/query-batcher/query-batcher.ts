@@ -1,26 +1,47 @@
 import wait from '../wait';
 
-type TaskCallback<Result> = (result: Result) => void;
-type Task<Payload, Result> = [Payload, TaskCallback<Result>];
+type TaskCallback<T> = (result: T) => void;
+type Task<ID, Result> = TaskCallback<Result> & {
+  id: ID;
+};
 
-interface Options {
+interface Cache<T> {
+  get: (key: any) => T;
+  has: (key: any) => boolean;
+  set: (key: any, val: T) => void;
+  delete: (key: any) => void;
+  keys: () => IterableIterator<any>;
+}
+
+/**
+ * Options for the query batcher with caching.
+ *
+ * @template T - The type of data returned by the query.
+ */
+interface Options<T> {
   /**
-   * Should the initial query be debounced. If `false`, first query will be initiated immediately
+   * Determines whether the initial query should be debounced. If `false`, the first query will be initiated immediately.
    *
    * @default true
    */
   debounce?: boolean;
 
   /**
-   * Should wait response before start next batch.
-   * E.g. even if `ms` param is 500ms, but `Task` exec time is 1s, next batched query will
-   * be executed in 1s.
+   * Determines whether the next batched query should wait for a response before executing.
+   * For example, even if the `ms` parameter is set to 500ms, but the `Task` execution time is 1s,
+   * the next batched query will be executed in 1s.
    */
   shouldWaitResponse?: boolean;
+
+  /**
+   * The cache to use for storing query results. If `null`, no caching will be used.
+   */
+  cache?: Cache<T> | null;
 }
-const defaultOptions: Required<Options> = {
+const defaultOptions: Required<Options<unknown>> = {
   debounce: true,
   shouldWaitResponse: false,
+  cache: null,
 };
 
 /**
@@ -29,28 +50,28 @@ const defaultOptions: Required<Options> = {
  * it will batch these 3 queries and make only one actual API call.
  * For usage examples, see `__tests__` folder.
  */
-class QueryBatcher<Param, Result> {
+class QueryBatcher<ID extends string | number, T> {
   private canCall = true;
 
-  private queue: Task<Param, Result>[] = [];
+  private queue: Task<ID, T>[] = [];
 
-  private options: Required<Options>;
+  private options: Required<Options<T>>;
 
   constructor(
     /**
      * Function that queries multiple entries by their ID array
      */
-    private readonly queryMultiple: (payloads: Param[]) => Promise<Result[]>,
+    private readonly queryMultiple: (payloads: ID[]) => Promise<T[]>,
 
     /**
      * Milliseconds to wait before next query
      */
     private readonly ms: number,
 
-    options: Options = defaultOptions,
+    options: Options<T> = defaultOptions as Options<T>
   ) {
     this.options = {
-      ...defaultOptions,
+      ...(defaultOptions as Required<Options<T>>),
       ...options,
     };
   }
@@ -60,12 +81,14 @@ class QueryBatcher<Param, Result> {
    * @param payload - The query parameters.
    * @returns A Promise that resolves with the query result.
    */
-  public query = (payload: Param): Promise<Result> => new Promise<Result>((resolve) => {
-    this.addTask(payload, resolve);
-  });
+  public query = (payload: ID): Promise<T> =>
+    new Promise<T>((resolve) => {
+      this.addTask(payload, resolve);
+    });
 
-  private addTask = (payload: Param, cb: TaskCallback<Result>) => {
-    this.queue.push([payload, cb]);
+  private addTask = (payload: ID, cb: TaskCallback<T>) => {
+    const task: Task<ID, T> = Object.assign(cb, { id: payload });
+    this.queue.push(task);
 
     // Do not make it zalgo
     setTimeout(this.run, this.ms * +this.options.debounce);
@@ -79,10 +102,35 @@ class QueryBatcher<Param, Result> {
     this.canCall = false;
     const tasks = [...this.queue];
     this.queue = [];
-    const payloads = tasks.map(([payload]) => payload);
-    const query = this.queryMultiple(payloads).then((result) => {
-      tasks.forEach(([, cb], i) => {
-        cb(result[i]);
+    const { cache } = this.options;
+    const ids = [...new Set(tasks.map((task) => task.id))];
+    const [cachedIds, notCachedIds] = ids.reduce<[ID[], ID[]]>(
+      (acc, id) => {
+        const group = cache?.has(id) ? acc[0] : acc[1];
+        group.push(id);
+
+        return acc;
+      },
+      [[], []]
+    );
+
+    const resultMap: Record<ID, T> = {} as Record<ID, T>;
+    const query = this.queryMultiple(notCachedIds).then((result) => {
+      notCachedIds.forEach((id, i) => {
+        resultMap[id] = result[i];
+
+        if (cache) {
+          cache.set(id, result[i]);
+        }
+      });
+
+      cachedIds.forEach((id) => {
+        resultMap[id] = this.options.cache!.get(id);
+      });
+
+      // Make sure that tasks are called in the same order as they were added
+      tasks.forEach((task) => {
+        task(resultMap[task.id]);
       });
     });
 
@@ -90,7 +138,6 @@ class QueryBatcher<Param, Result> {
     if (this.options.shouldWaitResponse) {
       promises.push(query);
     }
-
     await Promise.all(promises);
 
     this.canCall = true;
