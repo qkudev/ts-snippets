@@ -3,6 +3,7 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
+  "ignorePatterns": [".eslintrc.js", "jest.config.js", "jest.setup.js"],
   "plugins": ["prettier"],
   "rules": {
     "prefer-regex-literals": 0,
