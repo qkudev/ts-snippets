@@ -1,1 +1,1 @@
-export { default } from './EventEmitter';
+export { default } from './event-emitter';
