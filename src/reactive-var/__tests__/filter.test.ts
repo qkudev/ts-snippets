@@ -1,0 +1,38 @@
+import filter from '../filter';
+import reactiveVar from '../reactive-var';
+
+describe('filter', () => {
+  it('should create filtered variable', () => {
+    const x = reactiveVar(2);
+
+    const even = filter(x, (value) => value % 2 === 0);
+
+    expect(even()).toBe(2);
+  });
+
+  it('should update filtered variable', () => {
+    const x = reactiveVar(2);
+    const even = filter(x, (value) => value % 2 === 0);
+
+    x(4);
+
+    expect(even()).toBe(4);
+  });
+
+  it('should filter updates', () => {
+    const x = reactiveVar(2);
+    const even = filter(x, (value) => value % 2 === 0);
+
+    x(3);
+
+    expect(even()).toBe(2);
+  });
+
+  it('returns undefined if initial value is not accepted by predicate', () => {
+    const x = reactiveVar(1);
+
+    const even = filter(x, (value) => value % 2 === 0);
+
+    expect(even()).toBe(undefined);
+  });
+});
