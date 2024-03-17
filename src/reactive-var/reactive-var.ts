@@ -1,44 +1,11 @@
-/**
- * A function that receives a value of type T and returns void.
- */
-type Listener<T> = (value: T) => void;
-
-/**
- * A function that can be called with or without an argument of type T.
- * When called without an argument, it returns the current value of type T.
- * When called with an argument, it sets the current value to the argument and returns it.
- * It also has an `onChange` method that allows registering listeners for changes to the value.
- */
-/**
- * A function that returns and sets a reactive variable of type T.
- * @template T The type of the reactive variable.
- * @param {T} [next] The value to set the reactive variable to.
- * @returns {T} The current value of the reactive variable.
- */
-type ReactiveVar<T> = ((next?: T) => T) & {
-  /**
-   * Registers a listener function that will be called whenever the value changes.
-   * Returns a function that can be called to remove the listener.
-   * @param {Listener<T>} listener The listener function to register.
-   * @returns {() => void} A function that can be called to remove the listener.
-   */
-  onChange: (listener: Listener<T>) => () => void;
-
-  /**
-   * Returns a new reactive variable of type R that is derived from the current reactive variable.
-   * @template R The type of the new reactive variable.
-   * @param {(value: T) => R} fn The function used to derive the new reactive variable.
-   * @returns {ReactiveVar<R>} The new reactive variable.
-   */
-  pipe: <R>(fn: (value: T) => R) => ReactiveVar<R>;
-};
-
-/**
- * A predicate that receives two values of type T and returns their equality.
- */
-function defaultEqualityFn<T>(a: T, b:T) {
-  return a === b;
-}
+import {
+  FROZEN,
+  REACTIVE,
+  freeze,
+  setToFrozen,
+  defaultEqualityFn,
+} from './utils';
+import { Listener, ReactiveVar } from './reactive-var.types';
 
 /**
  * Creates a new reactive variable with the given initial state and optional equality function.
@@ -47,7 +14,10 @@ function defaultEqualityFn<T>(a: T, b:T) {
  * When called with an argument, it sets the current value to the argument and returns it.
  * It also has an `onChange` method that allows registering listeners for changes to the value.
  */
-function reactiveVar<T>(initialState: T, equalityFn = defaultEqualityFn<T>): ReactiveVar<T> {
+function reactiveVar<T>(
+  initialState: T,
+  equalityFn = defaultEqualityFn<T>
+): ReactiveVar<T> {
   const listeners = new Set<Listener<T>>();
   let state = initialState;
 
@@ -58,15 +28,16 @@ function reactiveVar<T>(initialState: T, equalityFn = defaultEqualityFn<T>): Rea
   }
 
   function setState(next: T) {
-    if (!equalityFn(state, next)) {
-      state = next;
-
-      notifyListeners();
+    if (equalityFn(state, next)) {
+      return;
     }
+
+    state = next;
+    notifyListeners();
   }
 
   function self(...args: [] | [T]) {
-    if (args.length) {
+    if (args.length && !self[FROZEN]) {
       const [nextState] = args;
 
       setState(nextState);
@@ -75,10 +46,11 @@ function reactiveVar<T>(initialState: T, equalityFn = defaultEqualityFn<T>): Rea
     return state;
   }
 
+  self[FROZEN] = false;
+  self[REACTIVE] = true;
+
   self.onChange = function onChange(listener: Listener<T>) {
-    if (!listeners.has(listener)) {
-      listeners.add(listener);
-    }
+    listeners.add(listener);
 
     return () => {
       listeners.delete(listener);
@@ -87,13 +59,14 @@ function reactiveVar<T>(initialState: T, equalityFn = defaultEqualityFn<T>): Rea
 
   self.pipe = function pipe<R>(fn: (value: T) => R) {
     const pipedValue = reactiveVar(fn(state));
+    freeze(pipedValue);
 
     self.onChange((value) => {
-      pipedValue(fn(value));
+      setToFrozen(pipedValue, fn(value));
     });
 
     return pipedValue;
-  }
+  };
 
   return self as ReactiveVar<T>;
 }
