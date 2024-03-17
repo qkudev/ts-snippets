@@ -35,4 +35,15 @@ describe('filter', () => {
 
     expect(even()).toBe(undefined);
   });
+
+  it('should call listener on update', () => {
+    const x = reactiveVar(2);
+    const even = filter(x, (value) => value % 2 === 0);
+    const listener = jest.fn();
+    even.onChange(listener);
+
+    x(4);
+
+    expect(listener).toHaveBeenCalledWith(4);
+  });
 });

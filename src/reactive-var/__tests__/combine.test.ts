@@ -31,6 +31,25 @@ describe('combine', () => {
     });
   });
 
+  it('should call listener on change of any child', () => {
+    const x = reactiveVar(1);
+    const y = reactiveVar(2);
+    const combined = combine({
+      x,
+      y,
+    });
+
+    const listener = jest.fn();
+    combined.onChange(listener);
+
+    x(4);
+
+    expect(listener).toHaveBeenCalledWith({
+      x: 4,
+      y: 2,
+    });
+  });
+
   it('should ignore set calls', () => {
     const combined = combine({
       x: reactiveVar(1),
