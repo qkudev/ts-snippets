@@ -18,4 +18,7 @@ module.exports = {
     '<rootDir>/src/**/*.{spec,test}.{js,ts}',
     '<rootDir>/**/*.{spec,test}.{js,ts}',
   ],
+  globals: {
+    fetch: global.fetch,
+  },
 };

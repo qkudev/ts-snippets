@@ -2,10 +2,21 @@ import reactiveVar from './reactive-var';
 import { ReactiveVar } from './reactive-var.types';
 import { freeze, setToFrozen } from './utils';
 
-const filter = <T>(
+function filter<T>(
+  $value: ReactiveVar<T>
+): (predicate: (value: T) => boolean) => ReactiveVar<T>;
+
+function filter<T>(
   $value: ReactiveVar<T>,
   predicate: (value: T) => boolean
-) => {
+): ReactiveVar<T>;
+
+function filter<T>($value: ReactiveVar<T>, predicate?: (value: T) => boolean) {
+  if (!predicate) {
+    return (curriedPredicate: (value: T) => boolean) =>
+      filter($value, curriedPredicate);
+  }
+
   const filtered = reactiveVar(
     predicate($value()) ? $value() : (undefined as unknown as T)
   );
@@ -18,6 +29,6 @@ const filter = <T>(
   });
 
   return filtered;
-};
+}
 
 export default filter;

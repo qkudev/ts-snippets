@@ -32,7 +32,13 @@ export type ReactiveVar<T> = ((next?: T) => T) & {
    * @param {(value: T) => R} fn The function used to derive the new reactive variable.
    * @returns {ReactiveVar<R>} The new reactive variable.
    */
-  pipe: <R>(fn: (value: T) => R) => ReactiveVar<R>;
+  map: <R>(fn: (value: T) => R) => ReactiveVar<R>;
+
+  /**
+   * Returns a new reactive variable of the same type that is updated only when original variable
+   * is updated and given predicate returns true.
+   */
+  filter: (predicate: (value: T) => boolean) => ReactiveVar<T>;
 
   [REACTIVE]: true;
   [FROZEN]: boolean;
