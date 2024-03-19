@@ -54,9 +54,9 @@ describe('reactive var', () => {
     expect(reactive()).toEqual({ a: 1 });
   });
 
-  it('should pipe to other value', () => {
+  it('should map to other value', () => {
     const x = reactiveVar(1);
-    const y = x.pipe((v) => v * 2);
+    const y = x.map((v) => v * 2);
 
     const listener = jest.fn();
     y.onChange(listener);
@@ -70,7 +70,7 @@ describe('reactive var', () => {
 
   it('should not set to piped value', () => {
     const x = reactiveVar(1);
-    const piped = x.pipe((v) => v * 2);
+    const piped = x.map((v) => v * 2);
 
     piped(10);
 

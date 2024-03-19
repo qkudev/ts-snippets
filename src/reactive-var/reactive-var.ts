@@ -1,11 +1,7 @@
-import {
-  FROZEN,
-  REACTIVE,
-  freeze,
-  setToFrozen,
-  defaultEqualityFn,
-} from './utils';
+import { FROZEN, REACTIVE, defaultEqualityFn } from './utils';
 import { Listener, ReactiveVar } from './reactive-var.types';
+import map from './map';
+import filter from './filter';
 
 /**
  * Creates a new reactive variable with the given initial state and optional equality function.
@@ -57,16 +53,8 @@ function reactiveVar<T>(
     };
   };
 
-  self.pipe = function pipe<R>(fn: (value: T) => R) {
-    const pipedValue = reactiveVar(fn(state));
-    freeze(pipedValue);
-
-    self.onChange((value) => {
-      setToFrozen(pipedValue, fn(value));
-    });
-
-    return pipedValue;
-  };
+  self.map = map(self as ReactiveVar<T>);
+  self.filter = filter(self as ReactiveVar<T>);
 
   return self as ReactiveVar<T>;
 }

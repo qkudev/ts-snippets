@@ -46,4 +46,14 @@ describe('filter', () => {
 
     expect(listener).toHaveBeenCalledWith(4);
   });
+
+  it('should be carried', () => {
+    const x = reactiveVar(2);
+    const filterX = filter(x);
+    const even = filterX((value) => value % 2 === 0);
+
+    x(4);
+
+    expect(even()).toBe(4);
+  });
 });
