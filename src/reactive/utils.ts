@@ -1,6 +1,6 @@
 import { bus } from './bus';
 import { getId } from './id';
-import type { Reactive } from './types';
+import type { EqualityFn, Reactive } from './types';
 
 export const REACTIVE = Symbol('reactive');
 export const ID = Symbol('id');
@@ -23,7 +23,7 @@ export const seal = <T>($var: Reactive<T>) => {
 };
 
 /**
- * Removes `freeze` effect
+ * Removes `seal` effect
  *
  * @see seal
  */
@@ -38,15 +38,26 @@ export const unseal = <T>($var: Reactive<T>) => {
 /**
  * Sets value to frozen variable
  */
-export const setToSealed = <T>($value: Reactive<T>, next: T) => {
-  unseal($value);
-  $value(next);
-  seal($value);
-};
+export function setToSealed<T>($var: Reactive<T>): (next: T) => typeof $var;
+export function setToSealed<T>($var: Reactive<T>, next: T): typeof $var;
+export function setToSealed<T>(
+  ...args: [$var: Reactive<T>] | [$var: Reactive<T>, next: T]
+) {
+  const [$var] = args;
+
+  if (args.length === 1) {
+    return (next: T) => setToSealed($var, next);
+  }
+
+  const next = args[1];
+  unseal($var);
+  $var(next);
+  seal($var);
+
+  return $var;
+}
 
 /**
  * A predicate that receives two values of type T and returns their equality.
  */
-export function defaultEqualityFn<T>(a: T, b: T) {
-  return a === b;
-}
+export const defaultEqualityFn: EqualityFn = (a, b) => a === b;

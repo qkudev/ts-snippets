@@ -13,7 +13,7 @@ export const root = new Map<Id, ReactiveVarState<unknown>>();
 
 export const createVar = <T>(
   initialValue: T,
-  equalityFn: EqualityFn<T> = defaultEqualityFn
+  equalityFn: EqualityFn = defaultEqualityFn
 ): Id => {
   const id = generateId();
 
@@ -21,7 +21,7 @@ export const createVar = <T>(
     id,
     value: initialValue,
     sealed: false,
-    equalityFn: equalityFn as EqualityFn<unknown>,
+    equalityFn,
   });
 
   return id;

@@ -10,15 +10,15 @@ import { Listener, Reactive, Unsubscribe } from './types';
  * which you can control it with `equalityFn` argument for `reactive`
  *
  * @example
- * const $x = reactive(2)
- * const listener = (x: number) => console.log('x ', x)
- * const unsubscribe = onChange($x, listener)
+ * const $x = reactive(2);
+ * const listener = (x: number) => console.log('x ', x);
+ * const unsubscribe = onChange($x, listener);
  *
- * $x(4) // `listener` have been called with 4
- * $x(4) // `listener` have not been called
+ * $x(4);  // `listener` have been called with 4
+ * $x(4);  // `listener` have not been called
  *
- * unsubscribe()
- * $x(10) // `listener` have not been called
+ * unsubscribe();
+ * $x(10); // `listener` have not been called
  */
 function onChange<T>($var: Reactive<T>): (listener: Listener<T>) => Unsubscribe;
 

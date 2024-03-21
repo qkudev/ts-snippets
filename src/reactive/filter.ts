@@ -12,15 +12,15 @@ import { seal, setToSealed } from './utils';
  *
  *
  * @example
- * const $x = reactive(2)
- * const $evenX = $x.filter(value => value % 2 === 0)
- * $evenX() // 2
+ * const $x = reactive(2);
+ * const $evenX = filter($x, value => value % 2 === 0);
+ * $evenX(); // 2
  *
- * $x(4)
- * $evenX() // 4
+ * $x(4);
+ * $evenX(); // 4
  *
- * $x(5)
- * $evenX() // 4
+ * $x(5);
+ * $evenX(); // 4
  */
 function filter<T>($var: Reactive<T>): (predicate: Predicate<T>) => Reactive<T>;
 

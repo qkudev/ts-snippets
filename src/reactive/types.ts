@@ -14,7 +14,7 @@ export type Predicate<Type> = (value: Type) => boolean;
  */
 export type Id = number;
 
-export type EqualityFn<T = unknown> = (a: T, b: T) => boolean;
+export type EqualityFn = (a: unknown, b: unknown) => boolean;
 
 /**
  * A function that used by `map` to transform original value to a new one
@@ -66,7 +66,7 @@ export interface ReactiveVarState<T> {
   value: T;
   sealed: boolean;
   id: number;
-  equalityFn: EqualityFn<T>;
+  equalityFn: EqualityFn;
 }
 
 export type SetEventPayload<T> = {

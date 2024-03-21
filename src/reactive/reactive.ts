@@ -13,14 +13,14 @@ import { createVar, getValue } from './root';
  * When called with an argument, it sets the current value to the argument and returns it.
  *
  * @example
- * const $x = reactive(2)
- * $x()   // 2
- * $x(4)  // 4
- * $x()   // 4
+ * const $x = reactive(2);
+ * $x();   // 2
+ * $x(4);  // 4
+ * $x();   // 4
  */
 function reactive<T>(
   initialState: T,
-  equalityFn: EqualityFn<T> = defaultEqualityFn<T>
+  equalityFn: EqualityFn = defaultEqualityFn
 ): Reactive<T> {
   const id = createVar(initialState, equalityFn);
 

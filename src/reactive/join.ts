@@ -12,15 +12,15 @@ import { getValue } from './root';
  * Joined variable is sealed, so any set calls will be ignored.
  *
  * @example
- * const $price = reactive(2)
- * const $currency = reactive('USD')
- * const $priceString = join($price, $currency, (price, currency) => `${price} ${currency}`)
+ * const $price = reactive(2);
+ * const $currency = reactive('USD');
+ * const $priceString = join($price, $currency, (price, currency) => `${price} ${currency}`);
  *
- * $priceString() // "2 USD"
+ * $priceString();      // "2 USD"
  *
- * $price(4)
- * $priceString() // "4 USD"
- * $priceString("123") // "4 USD"
+ * $price(4);
+ * $priceString();      // "4 USD"
+ * $priceString("123"); // "4 USD"
  */
 function join<Vars extends VarsArray, Result>(
   ...joinArgs: [...vars: Vars, combiner: Combiner<Vars, Result>]
@@ -33,8 +33,9 @@ function join<Vars extends VarsArray, Result>(
   const joined = reactive(current());
   seal(joined);
 
+  const set = setToSealed(joined);
   const recalc = () => {
-    setToSealed(joined, current());
+    set(current());
   };
   $vars.forEach(($var) => onChange($var, recalc));
 

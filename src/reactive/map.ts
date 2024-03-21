@@ -13,15 +13,15 @@ import { seal, setToSealed } from './utils';
  * Newly created reactive var is sealed, e.g. any set calls will be ignored.
  *
  * @example
- * const $x = reactive(2)
- * const $squaredX = map($x, (x) => x * x)
+ * const $x = reactive(2);
+ * const $squaredX = map($x, (x) => x * x);
  *
- * $squaredX() // 4
+ * $squaredX(); // 4
  *
- * $x(4)
- * $squared() // 16
+ * $x(4);
+ * $squared(); // 16
  *
- * $squared(25) // set will be ignored, returns 16
+ * $squared(25); // set will be ignored, returns 16
  */
 function map<T>($var: Reactive<T>): <R>(mapper: Mapper<T, R>) => Reactive<R>;
 
@@ -34,8 +34,10 @@ function map<T, R>($var: Reactive<T>, mapper?: Mapper<T, R>) {
 
   const mapped = reactive(mapper($var()));
   seal(mapped);
+
+  const set = setToSealed(mapped);
   onChange($var, (next) => {
-    setToSealed(mapped, mapper(next));
+    set(mapper(next));
   });
 
   return mapped;
