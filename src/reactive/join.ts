@@ -1,8 +1,10 @@
-import reactiveVar from './reactive-var';
-import { ExtractReturnType, ReactiveVar } from './reactive-var.types';
+import reactive from './reactive';
+import { ExtractReturnType, Reactive } from './types';
 import { seal, setToSealed } from './utils';
+import onChange from './on-change';
+import { getValue } from './root';
 
-export type VarsArray = readonly ReactiveVar<any>[];
+export type VarsArray = readonly Reactive<any>[];
 
 type VarsValuesArray<Vars extends VarsArray> = ExtractReturnType<Vars>;
 
@@ -32,21 +34,16 @@ function join<Vars extends VarsArray, R>(
   $vars: Readonly<Vars>,
   combiner: Combiner<Vars, R>
 ) {
-  const getCurrentValue = () => {
-    const values = $vars.map(($var) =>
-      $var()
-    ) as unknown as ExtractReturnType<Vars>;
+  const current = () =>
+    combiner(...($vars.map(getValue) as ExtractReturnType<Vars>));
 
-    return combiner(...values);
-  };
-
-  const joined = reactiveVar(getCurrentValue());
+  const joined = reactive(current());
   seal(joined);
 
   const recalc = () => {
-    setToSealed(joined, getCurrentValue());
+    setToSealed(joined, current());
   };
-  $vars.forEach(($var) => $var.onChange(recalc));
+  $vars.forEach(($var) => onChange($var, recalc));
 
   return joined;
 }

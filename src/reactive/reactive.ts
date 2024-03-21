@@ -1,10 +1,10 @@
-import { SEALED, REACTIVE, defaultEqualityFn, ID } from './utils';
-import { ReactiveVar } from './reactive-var.types';
+import { REACTIVE, defaultEqualityFn, ID } from './utils';
+import { EqualityFn, Reactive } from './types';
 import map from './map';
 import filter from './filter';
-import generateId from './generate-id';
-import { bus, setEvent } from './bus';
+import { bus } from './bus';
 import onChange from './on-change';
+import { createVar, getValue } from './root';
 
 /**
  * Creates a new reactive variable with the given initial state and optional equality function.
@@ -15,43 +15,34 @@ import onChange from './on-change';
  */
 function reactiveVar<T>(
   initialState: T,
-  equalityFn = defaultEqualityFn<T>
-): ReactiveVar<T> {
-  let state = initialState;
-  const id = generateId();
-
-  function notifyListeners() {
-    bus.emit(setEvent(id), state);
-  }
+  equalityFn: EqualityFn<T> = defaultEqualityFn<T>
+): Reactive<T> {
+  const id = createVar(initialState, equalityFn);
 
   function setState(next: T) {
-    if (equalityFn(state, next)) {
-      return;
-    }
-
-    state = next;
-    notifyListeners();
+    bus.emit('set', {
+      id,
+      value: next,
+    });
   }
 
   function self(...args: [] | [T]) {
-    if (args.length && !self[SEALED]) {
+    if (args.length) {
       const [nextState] = args;
 
       setState(nextState);
     }
 
-    return state;
+    return getValue(id);
   }
 
-  self[SEALED] = false;
   self[REACTIVE] = true;
   self[ID] = id;
+  self.onChange = onChange(self as Reactive<T>);
+  self.map = map(self as Reactive<T>);
+  self.filter = filter(self as Reactive<T>);
 
-  self.onChange = onChange(self as ReactiveVar<T>);
-  self.map = map(self as ReactiveVar<T>);
-  self.filter = filter(self as ReactiveVar<T>);
-
-  return self as ReactiveVar<T>;
+  return self as Reactive<T>;
 }
 
 export default reactiveVar;

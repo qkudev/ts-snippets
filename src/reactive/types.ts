@@ -1,9 +1,18 @@
-import { SEALED, REACTIVE, ID } from './utils';
+import { REACTIVE, ID } from './utils';
 
 /**
  * A function that receives a value of type T and returns void.
  */
-export type Listener<T> = (value: T) => void;
+export type Listener<Type> = (value: Type) => void;
+
+export type Unsubscribe = () => void;
+
+export type Predicate<Type> = (value: Type) => boolean;
+
+/**
+ * A function that used by `map` to transform original value to a new one
+ */
+export type Mapper<Type, Result> = (value: Type) => Result;
 
 /**
  * A function that can be called with or without an argument of type T.
@@ -13,40 +22,41 @@ export type Listener<T> = (value: T) => void;
  */
 /**
  * A function that returns and sets a reactive variable of type T.
- * @template T The type of the reactive variable.
- * @param {T} [next] The value to set the reactive variable to.
- * @returns {T} The current value of the reactive variable.
+ * @template Type The type of the reactive variable.
+ * @param {Type} [next] The value to set the reactive variable to.
+ * @returns {Type} The current value of the reactive variable.
  */
-export type ReactiveVar<T> = ((next?: T) => T) & {
+export type Reactive<Type> = ((
+  next?: Type | ((current: Type) => Type)
+) => Type) & {
   /**
    * Registers a listener function that will be called whenever the value changes.
    * Returns a function that can be called to remove the listener.
-   * @param {Listener<T>} listener The listener function to register.
+   * @param {Listener<Type>} listener The listener function to register.
    * @returns {() => void} A function that can be called to remove the listener.
    */
-  onChange: (listener: Listener<T>) => () => void;
+  onChange: (listener: Listener<Type>) => () => void;
 
   /**
    * Returns a new reactive variable of type R that is derived from the current reactive variable.
-   * @template R The type of the new reactive variable.
-   * @param {(value: T) => R} fn The function used to derive the new reactive variable.
-   * @returns {ReactiveVar<R>} The new reactive variable.
+   * @template Result The type of the new reactive variable.
+   * @param {(value: Type) => Result} mapper The function used to derive the new reactive variable.
+   * @returns {Reactive<Result>} The new reactive variable.
    */
-  map: <R>(fn: (value: T) => R) => ReactiveVar<R>;
+  map: <Result>(mapper: Mapper<Type, Result>) => Reactive<Result>;
 
   /**
    * Returns a new reactive variable of the same type that is updated only when original variable
    * is updated and given predicate returns true.
    */
-  filter: (predicate: (value: T) => boolean) => ReactiveVar<T>;
+  filter: (predicate: Predicate<Type>) => Reactive<Type>;
 
   [REACTIVE]: true;
-  [SEALED]: boolean;
   [ID]: number;
 };
 
 export type SetEventPayload<T> = {
-  id: number;
+  id: Id;
   value: T;
 };
 
@@ -72,10 +82,20 @@ export type AnyFunction = (...args: any[]) => any;
 /**
  * Extracts the return type from all functions as a tuple.
  */
-export type ExtractReturnType<
-  FunctionsArray extends readonly ReactiveVar<any>[],
-> = {
-  [Index in keyof FunctionsArray]: FunctionsArray[Index] extends FunctionsArray[number]
-    ? FallbackIfUnknown<ReturnType<FunctionsArray[Index]>, any>
-    : never;
-};
+export type ExtractReturnType<FunctionsArray extends readonly Reactive<any>[]> =
+  {
+    [Index in keyof FunctionsArray]: FunctionsArray[Index] extends FunctionsArray[number]
+      ? FallbackIfUnknown<ReturnType<FunctionsArray[Index]>, any>
+      : never;
+  };
+
+export interface ReactiveVarState<T> {
+  value: T;
+  sealed: boolean;
+  id: number;
+  equalityFn: EqualityFn<T>;
+}
+
+export type Id = number;
+
+export type EqualityFn<T = unknown> = (a: T, b: T) => boolean;

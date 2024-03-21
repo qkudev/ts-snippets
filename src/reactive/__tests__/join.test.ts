@@ -1,10 +1,10 @@
 import join from '../join';
-import reactiveVar from '../reactive-var';
+import reactive from '../reactive';
 
 describe('join', () => {
   it('should join 2 values', () => {
-    const $price = reactiveVar(2);
-    const $currency = reactiveVar('usd');
+    const $price = reactive(2);
+    const $currency = reactive('usd');
 
     const $priceString = join(
       [$price, $currency] as const,
@@ -15,8 +15,8 @@ describe('join', () => {
   });
 
   it('should be sealed', () => {
-    const $price = reactiveVar(2);
-    const $currency = reactiveVar('usd');
+    const $price = reactive(2);
+    const $currency = reactive('usd');
     const $priceString = join(
       [$price, $currency] as const,
       (price, currency) => `${price} ${currency}`
@@ -28,8 +28,8 @@ describe('join', () => {
   });
 
   it('should handle original updates', () => {
-    const $price = reactiveVar(2);
-    const $currency = reactiveVar('usd');
+    const $price = reactive(2);
+    const $currency = reactive('usd');
     const $priceString = join(
       [$price, $currency] as const,
       (price, currency) => `${price} ${currency}`
@@ -45,8 +45,8 @@ describe('join', () => {
   });
 
   it('should call listener', () => {
-    const $price = reactiveVar(2);
-    const $currency = reactiveVar('usd');
+    const $price = reactive(2);
+    const $currency = reactive('usd');
     const $priceString = join(
       [$price, $currency] as const,
       (price, currency) => `${price} ${currency}`
@@ -60,11 +60,11 @@ describe('join', () => {
   });
 
   it('should join 5 variables', () => {
-    const $var1 = reactiveVar(1);
-    const $var2 = reactiveVar('string');
-    const $var3 = reactiveVar(true);
-    const $var4 = reactiveVar(null);
-    const $var5 = reactiveVar({});
+    const $var1 = reactive(1);
+    const $var2 = reactive('string');
+    const $var3 = reactive(true);
+    const $var4 = reactive(null);
+    const $var5 = reactive({});
 
     const $joined = join(
       [$var1, $var2, $var3, $var4, $var5] as const,
