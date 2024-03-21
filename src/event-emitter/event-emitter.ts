@@ -4,7 +4,7 @@ type EventName = string | Symbol;
  * A class that implements the EventEmitter pattern.
  * @class
  */
-class EventEmitter {
+class EventEmitter<Ev extends EventName = EventName> {
   /**
    * A map of event names to a set of listeners.
    * @private
@@ -13,10 +13,10 @@ class EventEmitter {
 
   /**
    * Emits an event with the given name and arguments.
-   * @param {EventName} event - The name of the event to emit.
+   * @param {Ev} event - The name of the event to emit.
    * @param {...any} args - The arguments to pass to the event listeners.
    */
-  public emit = (event: EventName, ...args: any[]) => {
+  public emit = (event: Ev, ...args: any[]) => {
     const eventListeners = this.listeners.get(event);
     if (!eventListeners) return;
 
@@ -25,11 +25,11 @@ class EventEmitter {
 
   /**
    * Adds a listener for the given event.
-   * @param {EventName} event - The name of the event to listen for.
+   * @param {Ev} event - The name of the event to listen for.
    * @param {Function} listener - The listener function to add.
    * @returns {Function} A function that removes the listener when called.
    */
-  public addListener = (event: EventName, listener: Function) => {
+  public addListener = (event: Ev, listener: Function) => {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
@@ -57,7 +57,7 @@ class EventEmitter {
    * @param {Function} listener - The listener function to add.
    * @returns {Function} A function that removes the listener when called.
    */
-  public once = (event: EventName, listener: Function) => {
+  public once = (event: Ev, listener: Function) => {
     const onceListener = (...args: any[]) => {
       listener(...args);
       this.removeListener(event, onceListener);

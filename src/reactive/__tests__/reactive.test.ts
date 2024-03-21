@@ -1,79 +1,88 @@
-import reactiveVar from '../reactive-var';
+import reactive from '../reactive';
 
 describe('reactive var', () => {
   it('should set initial state', () => {
-    const reactive = reactiveVar({ a: 1 });
+    const $x = reactive({ a: 1 });
 
-    expect(reactive()).toEqual({ a: 1 });
+    expect($x()).toEqual({ a: 1 });
   });
 
   it('should set next value', () => {
-    const reactive = reactiveVar({ a: 1 });
+    const $x = reactive({ a: 1 });
 
-    expect(reactive({ a: 2 })).toEqual({ a: 2 });
+    expect($x({ a: 2 })).toEqual({ a: 2 });
   });
 
   it('should handle listeners', () => {
-    const reactive = reactiveVar({ a: 1 });
+    const $x = reactive({ a: 1 });
     const listener = jest.fn();
-    const unsubscribe = reactive.onChange(listener);
+    const unsubscribe = $x.onChange(listener);
 
-    reactive({ a: 2 });
+    $x({ a: 2 });
 
     expect(listener).toHaveBeenCalledWith({ a: 2 });
     expect(listener).toHaveBeenCalledTimes(1);
 
     unsubscribe();
-
-    reactive({ a: 3 });
+    $x({ a: 3 });
 
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
   it('should not call listeners if state not truly changed', () => {
-    const reactive = reactiveVar(1);
+    const $x = reactive(1);
     const listener = jest.fn();
-    reactive.onChange(listener);
+    $x.onChange(listener);
 
-    reactive(1);
+    $x(1);
 
     expect(listener).toHaveBeenCalledTimes(0);
   });
 
   it('should use given equality fn', () => {
-    const reactive = reactiveVar(
+    const $x = reactive(
       { a: 1 },
       (a, b) => JSON.stringify(a) === JSON.stringify(b)
     );
     const listener = jest.fn();
-    reactive.onChange(listener);
+    $x.onChange(listener);
 
-    reactive({ a: 1 });
+    $x({ a: 1 });
 
     expect(listener).toHaveBeenCalledTimes(0);
-    expect(reactive()).toEqual({ a: 1 });
+    expect($x()).toEqual({ a: 1 });
   });
 
   it('should map to other value', () => {
-    const x = reactiveVar(1);
-    const y = x.map((v) => v * 2);
+    const $x = reactive(1);
+    const $y = $x.map((v) => v * 2);
 
     const listener = jest.fn();
-    y.onChange(listener);
+    $y.onChange(listener);
 
-    x(2);
+    $x(2);
 
-    expect(y()).toEqual(4);
+    expect($y()).toEqual(4);
     expect(listener).toHaveBeenCalledWith(4);
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
   it('should not set to piped value', () => {
-    const x = reactiveVar(1);
-    const piped = x.map((v) => v * 2);
+    const $x = reactive(1);
+    const $squareX = $x.map((v) => v * 2);
 
-    piped(10);
+    $squareX(10);
 
-    expect(piped()).toBe(2);
+    expect($squareX()).toBe(2);
+  });
+
+  it('should accept callback to modify value', () => {
+    const $x = reactive(1);
+    const inc = (val: number) => val + 1;
+
+    const $inc = () => $x(inc);
+
+    expect($inc()).toBe(2);
+    expect($x()).toBe(2);
   });
 });

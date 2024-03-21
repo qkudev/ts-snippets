@@ -1,48 +1,48 @@
 import combine from '../combine';
-import reactiveVar from '../reactive-var';
+import reactive from '../reactive';
 
 describe('combine', () => {
   it('should combine reactive variables', () => {
-    const combined = combine({
-      x: reactiveVar(1),
-      y: reactiveVar(2),
+    const $combined = combine({
+      x: reactive(1),
+      y: reactive(2),
     });
 
-    expect(combined()).toEqual({
+    expect($combined()).toEqual({
       x: 1,
       y: 2,
     });
   });
 
   it('should update combined variable whenever child is updated', () => {
-    const x = reactiveVar(1);
-    const y = reactiveVar(2);
+    const $x = reactive(1);
+    const $y = reactive(2);
 
-    const combined = combine({
-      x,
-      y,
+    const $combined = combine({
+      x: $x,
+      y: $y,
     });
 
-    x(4);
+    $x(4);
 
-    expect(combined()).toEqual({
+    expect($combined()).toEqual({
       x: 4,
       y: 2,
     });
   });
 
   it('should call listener on change of any child', () => {
-    const x = reactiveVar(1);
-    const y = reactiveVar(2);
-    const combined = combine({
-      x,
-      y,
+    const $x = reactive(1);
+    const $y = reactive(2);
+    const $combined = combine({
+      x: $x,
+      y: $y,
     });
 
     const listener = jest.fn();
-    combined.onChange(listener);
+    $combined.onChange(listener);
 
-    x(4);
+    $x(4);
 
     expect(listener).toHaveBeenCalledWith({
       x: 4,
@@ -51,17 +51,17 @@ describe('combine', () => {
   });
 
   it('should ignore set calls', () => {
-    const combined = combine({
-      x: reactiveVar(1),
-      y: reactiveVar(2),
+    const $combined = combine({
+      x: reactive(1),
+      y: reactive(2),
     });
 
-    combined({
+    $combined({
       x: 10,
       y: -1,
     });
 
-    expect(combined()).toEqual({
+    expect($combined()).toEqual({
       x: 1,
       y: 2,
     });
