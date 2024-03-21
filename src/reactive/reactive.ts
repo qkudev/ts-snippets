@@ -11,9 +11,14 @@ import { createVar, getValue } from './root';
  * The returned function can be called with or without an argument of type T.
  * When called without an argument, it returns the current value of type T.
  * When called with an argument, it sets the current value to the argument and returns it.
- * It also has an `onChange` method that allows registering listeners for changes to the value.
+ *
+ * @example
+ * const $x = reactive(2)
+ * $x()   // 2
+ * $x(4)  // 4
+ * $x()   // 4
  */
-function reactiveVar<T>(
+function reactive<T>(
   initialState: T,
   equalityFn: EqualityFn<T> = defaultEqualityFn<T>
 ): Reactive<T> {
@@ -36,13 +41,15 @@ function reactiveVar<T>(
     return getValue(id);
   }
 
-  self[REACTIVE] = true;
-  self[ID] = id;
-  self.onChange = onChange(self as Reactive<T>);
-  self.map = map(self as Reactive<T>);
-  self.filter = filter(self as Reactive<T>);
+  Object.assign(self, {
+    [ID]: id,
+    [REACTIVE]: true,
+    onChange: onChange(self as Reactive<T>),
+    map: map(self as Reactive<T>),
+    filter: filter(self as Reactive<T>),
+  });
 
   return self as Reactive<T>;
 }
 
-export default reactiveVar;
+export default reactive;

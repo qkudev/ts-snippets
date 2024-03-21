@@ -10,6 +10,13 @@ export type Unsubscribe = () => void;
 export type Predicate<Type> = (value: Type) => boolean;
 
 /**
+ * Unique reactive var identified
+ */
+export type Id = number;
+
+export type EqualityFn<T = unknown> = (a: T, b: T) => boolean;
+
+/**
  * A function that used by `map` to transform original value to a new one
  */
 export type Mapper<Type, Result> = (value: Type) => Result;
@@ -19,12 +26,12 @@ export type Mapper<Type, Result> = (value: Type) => Result;
  * When called without an argument, it returns the current value of type T.
  * When called with an argument, it sets the current value to the argument and returns it.
  * It also has an `onChange` method that allows registering listeners for changes to the value.
- */
-/**
- * A function that returns and sets a reactive variable of type T.
- * @template Type The type of the reactive variable.
- * @param {Type} [next] The value to set the reactive variable to.
- * @returns {Type} The current value of the reactive variable.
+ *
+ * @example
+ * const $x = reactive(2)
+ * $x()   // 2
+ * $x(4)  // 4
+ * $x()   // 4
  */
 export type Reactive<Type> = ((
   next?: Type | ((current: Type) => Type)
@@ -55,6 +62,13 @@ export type Reactive<Type> = ((
   [ID]: number;
 };
 
+export interface ReactiveVarState<T> {
+  value: T;
+  sealed: boolean;
+  id: number;
+  equalityFn: EqualityFn<T>;
+}
+
 export type SetEventPayload<T> = {
   id: Id;
   value: T;
@@ -75,11 +89,6 @@ export type IfUnknown<T, TypeIfUnknown, TypeIfNotUnknown> = unknown extends T //
 export type FallbackIfUnknown<T, FallbackTo> = IfUnknown<T, FallbackTo, T>;
 
 /**
- * Any function with any arguments.
- */
-export type AnyFunction = (...args: any[]) => any;
-
-/**
  * Extracts the return type from all functions as a tuple.
  */
 export type ExtractReturnType<FunctionsArray extends readonly Reactive<any>[]> =
@@ -89,13 +98,13 @@ export type ExtractReturnType<FunctionsArray extends readonly Reactive<any>[]> =
       : never;
   };
 
-export interface ReactiveVarState<T> {
-  value: T;
-  sealed: boolean;
-  id: number;
-  equalityFn: EqualityFn<T>;
-}
+export type VarsArray = readonly Reactive<any>[];
 
-export type Id = number;
+export type VarsArrayValues<Vars extends VarsArray> = ExtractReturnType<Vars>;
 
-export type EqualityFn<T = unknown> = (a: T, b: T) => boolean;
+/**
+ * A function that takes input vars return values as arguments and returns a result. Otherwise known as `resultFunc`.
+ */
+export type Combiner<InputVars extends VarsArray, Result> = (
+  ...resultFuncArgs: VarsArrayValues<InputVars>
+) => Result;

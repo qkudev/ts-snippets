@@ -7,7 +7,8 @@ describe('join', () => {
     const $currency = reactive('usd');
 
     const $priceString = join(
-      [$price, $currency] as const,
+      $price,
+      $currency,
       (price, currency) => `${price} ${currency}`
     );
 
@@ -18,7 +19,8 @@ describe('join', () => {
     const $price = reactive(2);
     const $currency = reactive('usd');
     const $priceString = join(
-      [$price, $currency] as const,
+      $price,
+      $currency,
       (price, currency) => `${price} ${currency}`
     );
 
@@ -31,7 +33,8 @@ describe('join', () => {
     const $price = reactive(2);
     const $currency = reactive('usd');
     const $priceString = join(
-      [$price, $currency] as const,
+      $price,
+      $currency,
       (price, currency) => `${price} ${currency}`
     );
 
@@ -48,7 +51,8 @@ describe('join', () => {
     const $price = reactive(2);
     const $currency = reactive('usd');
     const $priceString = join(
-      [$price, $currency] as const,
+      $price,
+      $currency,
       (price, currency) => `${price} ${currency}`
     );
     const listener = jest.fn();
@@ -67,7 +71,11 @@ describe('join', () => {
     const $var5 = reactive({});
 
     const $joined = join(
-      [$var1, $var2, $var3, $var4, $var5] as const,
+      $var1,
+      $var2,
+      $var3,
+      $var4,
+      $var5,
       (var1, var2, var3, var4, var5) => ({
         var1,
         var2,
@@ -77,6 +85,12 @@ describe('join', () => {
       })
     );
 
-    expect($joined()).toBeDefined();
+    expect($joined()).toEqual({
+      var1: 1,
+      var2: 'string',
+      var3: true,
+      var4: null,
+      var5: {},
+    });
   });
 });

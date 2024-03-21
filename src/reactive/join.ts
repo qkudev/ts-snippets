@@ -1,39 +1,32 @@
 import reactive from './reactive';
-import { ExtractReturnType, Reactive } from './types';
+import { ExtractReturnType, VarsArray, Combiner } from './types';
 import { seal, setToSealed } from './utils';
 import onChange from './on-change';
 import { getValue } from './root';
 
-export type VarsArray = readonly Reactive<any>[];
-
-type VarsValuesArray<Vars extends VarsArray> = ExtractReturnType<Vars>;
-
 /**
- * Distributes over a type. It is used mostly to expand a function type
- * in hover previews while preserving their original JSDoc information.
+ * Accepts N reactive vars and `Combiner` as the last arg.
+ * The `Combiner` is a N-ary function of values of reactive vars.
+ * Updates on dependent variables will result in joined variable update.
  *
- * If preserving JSDoc information is not a concern, you can use {@linkcode ExpandFunction ExpandFunction}.
+ * Joined variable is sealed, so any set calls will be ignored.
  *
- * @template T The type to be distributed.
+ * @example
+ * const $price = reactive(2)
+ * const $currency = reactive('USD')
+ * const $priceString = join($price, $currency, (price, currency) => `${price} ${currency}`)
  *
- * @internal
+ * $priceString() // "2 USD"
+ *
+ * $price(4)
+ * $priceString() // "4 USD"
+ * $priceString("123") // "4 USD"
  */
-export type Distribute<T> = T extends T ? T : never;
-
-export type Combiner<InputVars extends VarsArray, Result> = Distribute<
-  /**
-   * A function that takes input selectors' return values as arguments and returns a result. Otherwise known as `resultFunc`.
-   *
-   * @param resultFuncArgs - Return values of input selectors.
-   * @returns The return value of {@linkcode OutputSelectorFields.resultFunc resultFunc}.
-   */
-  (...resultFuncArgs: VarsValuesArray<InputVars>) => Result
->;
-
-function join<Vars extends VarsArray, R>(
-  $vars: Readonly<Vars>,
-  combiner: Combiner<Vars, R>
+function join<Vars extends VarsArray, Result>(
+  ...joinArgs: [...vars: Vars, combiner: Combiner<Vars, Result>]
 ) {
+  const combiner = joinArgs.pop() as Combiner<Vars, Result>;
+  const $vars = joinArgs as VarsArray;
   const current = () =>
     combiner(...($vars.map(getValue) as ExtractReturnType<Vars>));
 
