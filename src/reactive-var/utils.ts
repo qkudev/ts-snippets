@@ -1,7 +1,8 @@
 import type { ReactiveVar } from './reactive-var.types';
 
-export const FROZEN = Symbol('frozen');
+export const SEALED = Symbol('sealed');
 export const REACTIVE = Symbol('reactive');
+export const ID = Symbol('id');
 
 export const isReactive = <T>(val: unknown): val is ReactiveVar<T> =>
   Boolean(typeof val === 'function' && (val as ReactiveVar<T>)[REACTIVE]);
@@ -9,34 +10,34 @@ export const isReactive = <T>(val: unknown): val is ReactiveVar<T> =>
 /**
  * Freezes given reactive var so any set call will be ignored
  */
-export const freeze = <T>($value: ReactiveVar<T>) => {
+export const seal = <T>($value: ReactiveVar<T>) => {
   if (!isReactive($value)) {
     throw new TypeError('Not reactive value given');
   }
 
-  $value[FROZEN] = true;
+  $value[SEALED] = true;
 };
 
 /**
  * Removes `freeze` effect
  *
- * @see freeze
+ * @see seal
  */
-export const unfreeze = <T>($value: ReactiveVar<T>) => {
+export const unseal = <T>($value: ReactiveVar<T>) => {
   if (!isReactive($value)) {
     throw new TypeError('Not reactive value given');
   }
 
-  $value[FROZEN] = false;
+  $value[SEALED] = false;
 };
 
 /**
  * Sets value to frozen variable
  */
-export const setToFrozen = <T>($value: ReactiveVar<T>, next: T) => {
-  unfreeze($value);
+export const setToSealed = <T>($value: ReactiveVar<T>, next: T) => {
+  unseal($value);
   $value(next);
-  freeze($value);
+  seal($value);
 };
 
 /**

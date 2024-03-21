@@ -1,6 +1,6 @@
 import reactiveVar from './reactive-var';
 import { ReactiveVar } from './reactive-var.types';
-import { freeze, setToFrozen } from './utils';
+import { seal, setToSealed } from './utils';
 
 function map<T>(
   $value: ReactiveVar<T>
@@ -18,10 +18,10 @@ function map<T, R>($value: ReactiveVar<T>, callback?: (value: T) => R) {
   }
 
   const mapped = reactiveVar(callback($value()));
-  freeze(mapped);
+  seal(mapped);
 
   $value.onChange((next) => {
-    setToFrozen(mapped, callback(next));
+    setToSealed(mapped, callback(next));
   });
 
   return mapped;

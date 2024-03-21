@@ -1,4 +1,4 @@
-import { FROZEN, REACTIVE } from './utils';
+import { SEALED, REACTIVE, ID } from './utils';
 
 /**
  * A function that receives a value of type T and returns void.
@@ -41,5 +41,41 @@ export type ReactiveVar<T> = ((next?: T) => T) & {
   filter: (predicate: (value: T) => boolean) => ReactiveVar<T>;
 
   [REACTIVE]: true;
-  [FROZEN]: boolean;
+  [SEALED]: boolean;
+  [ID]: number;
+};
+
+export type SetEventPayload<T> = {
+  id: number;
+  value: T;
+};
+
+/**
+ * An if-else-like type that resolves depending on whether the given type is `unknown`.
+ * @see {@link https://github.com/sindresorhus/type-fest/blob/main/source/if-unknown.d.ts Source}
+ *
+ * @internal
+ */
+export type IfUnknown<T, TypeIfUnknown, TypeIfNotUnknown> = unknown extends T // `T` can be `unknown` or `any`
+  ? [T] extends [null] // `any` can be `null`, but `unknown` can't be
+    ? TypeIfNotUnknown
+    : TypeIfUnknown
+  : TypeIfNotUnknown;
+
+export type FallbackIfUnknown<T, FallbackTo> = IfUnknown<T, FallbackTo, T>;
+
+/**
+ * Any function with any arguments.
+ */
+export type AnyFunction = (...args: any[]) => any;
+
+/**
+ * Extracts the return type from all functions as a tuple.
+ */
+export type ExtractReturnType<
+  FunctionsArray extends readonly ReactiveVar<any>[],
+> = {
+  [Index in keyof FunctionsArray]: FunctionsArray[Index] extends FunctionsArray[number]
+    ? FallbackIfUnknown<ReturnType<FunctionsArray[Index]>, any>
+    : never;
 };

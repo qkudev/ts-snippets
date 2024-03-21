@@ -1,7 +1,10 @@
-import { FROZEN, REACTIVE, defaultEqualityFn } from './utils';
-import { Listener, ReactiveVar } from './reactive-var.types';
+import { SEALED, REACTIVE, defaultEqualityFn, ID } from './utils';
+import { ReactiveVar } from './reactive-var.types';
 import map from './map';
 import filter from './filter';
+import generateId from './generate-id';
+import { bus, setEvent } from './bus';
+import onChange from './on-change';
 
 /**
  * Creates a new reactive variable with the given initial state and optional equality function.
@@ -14,13 +17,11 @@ function reactiveVar<T>(
   initialState: T,
   equalityFn = defaultEqualityFn<T>
 ): ReactiveVar<T> {
-  const listeners = new Set<Listener<T>>();
   let state = initialState;
+  const id = generateId();
 
   function notifyListeners() {
-    listeners.forEach((listener) => {
-      listener(state);
-    });
+    bus.emit(setEvent(id), state);
   }
 
   function setState(next: T) {
@@ -33,7 +34,7 @@ function reactiveVar<T>(
   }
 
   function self(...args: [] | [T]) {
-    if (args.length && !self[FROZEN]) {
+    if (args.length && !self[SEALED]) {
       const [nextState] = args;
 
       setState(nextState);
@@ -42,17 +43,11 @@ function reactiveVar<T>(
     return state;
   }
 
-  self[FROZEN] = false;
+  self[SEALED] = false;
   self[REACTIVE] = true;
+  self[ID] = id;
 
-  self.onChange = function onChange(listener: Listener<T>) {
-    listeners.add(listener);
-
-    return () => {
-      listeners.delete(listener);
-    };
-  };
-
+  self.onChange = onChange(self as ReactiveVar<T>);
   self.map = map(self as ReactiveVar<T>);
   self.filter = filter(self as ReactiveVar<T>);
 

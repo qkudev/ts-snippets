@@ -1,6 +1,6 @@
 import reactiveVar from './reactive-var';
 import { ReactiveVar } from './reactive-var.types';
-import { freeze, setToFrozen } from './utils';
+import { seal, setToSealed } from './utils';
 
 function filter<T>(
   $value: ReactiveVar<T>
@@ -20,11 +20,11 @@ function filter<T>($value: ReactiveVar<T>, predicate?: (value: T) => boolean) {
   const filtered = reactiveVar(
     predicate($value()) ? $value() : (undefined as unknown as T)
   );
-  freeze(filtered);
+  seal(filtered);
 
   $value.onChange((next) => {
     if (predicate(next)) {
-      setToFrozen(filtered, next);
+      setToSealed(filtered, next);
     }
   });
 

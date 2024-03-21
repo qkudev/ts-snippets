@@ -1,6 +1,6 @@
 import reactiveVar from './reactive-var';
 import { ReactiveVar } from './reactive-var.types';
-import { freeze, setToFrozen } from './utils';
+import { seal, setToSealed } from './utils';
 
 /**
  * Accepts object as map of string keys and values as reactive vars
@@ -18,14 +18,14 @@ const combine = <Config extends Record<string, ReactiveVar<any>>>(
 
   Object.entries(config).forEach(([key, $value]) => {
     $value.onChange((nextValue) => {
-      setToFrozen($combined, {
+      setToSealed($combined, {
         ...$combined(),
         [key]: nextValue,
       });
     });
   });
 
-  freeze($combined);
+  seal($combined);
 
   return $combined as ReactiveVar<{
     [K in keyof Config]: ReturnType<Config[K]>;
