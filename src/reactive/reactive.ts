@@ -5,6 +5,7 @@ import filter from './filter';
 import { bus } from './bus';
 import onChange from './on-change';
 import { createVar, getValue } from './root';
+import reduce from './reduce';
 
 /**
  * Creates a new reactive variable with the given initial state and optional equality function.
@@ -47,6 +48,7 @@ function reactive<T>(
     onChange: onChange(self as Reactive<T>),
     map: map(self as Reactive<T>),
     filter: filter(self as Reactive<T>),
+    reduce: reduce(self as Reactive<T>),
   });
 
   return self as Reactive<T>;
