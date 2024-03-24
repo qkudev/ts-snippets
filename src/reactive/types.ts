@@ -58,6 +58,29 @@ export type Reactive<Type> = ((
    */
   filter: (predicate: Predicate<Type>) => Reactive<Type>;
 
+  /**
+   * Accepts reducer and initial state and creates new reactive var
+   * that derives it's next state by given callback, next value of original reactive var
+   * and it's own previous state.
+   *
+   * @example
+   * const $action = reactive({ type: '@@init' });
+   * const $counter = $action.reduce((counter, action) => {
+   *   switch (action.type) {
+   *    case 'increment': return counter + 1;
+   *    default: return counter;
+   *   }
+   * }, 0);
+   *
+   * $counter()                 // 0
+   * $action({ type: 'inc' });
+   * $counter();                // 1
+   */
+  reduce: {
+    <S>(reducer: Reducer<S, Type>): (initialState: S) => Reactive<S>;
+    <S>(reducer: Reducer<S, Type>, initialState: S): Reactive<S>;
+  };
+
   [REACTIVE]: true;
   [ID]: number;
 };
@@ -108,3 +131,5 @@ export type VarsArrayValues<Vars extends VarsArray> = ExtractReturnType<Vars>;
 export type Combiner<InputVars extends VarsArray, Result> = (
   ...resultFuncArgs: VarsArrayValues<InputVars>
 ) => Result;
+
+export type Reducer<Acc, Element> = (accumulator: Acc, element: Element) => Acc;

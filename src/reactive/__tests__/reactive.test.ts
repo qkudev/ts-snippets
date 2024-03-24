@@ -67,13 +67,31 @@ describe('reactive var', () => {
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
-  it('should not set to piped value', () => {
+  it('should not set to mapped value', () => {
     const $x = reactive(1);
     const $squareX = $x.map((v) => v * 2);
 
     $squareX(10);
 
     expect($squareX()).toBe(2);
+  });
+
+  it('should create reduced reactive var', () => {
+    const $action = reactive({ type: '@@ini' });
+    const $counter = $action.reduce((counter, action) => {
+      switch (action.type) {
+        case 'inc':
+          return counter + 1;
+        default:
+          return counter;
+      }
+    }, 0);
+
+    expect($counter(0)).toBe(0);
+
+    $action({ type: 'inc' });
+
+    expect($counter()).toBe(1);
   });
 
   it('should accept callback to modify value', () => {
