@@ -1,7 +1,5 @@
-import reactive from './reactive';
 import { Reactive } from './types';
-import { seal, setToSealed } from './utils';
-import onChange from './on-change';
+import join from './join';
 
 /**
  * Accepts object as map of string keys and values as reactive vars
@@ -22,22 +20,17 @@ import onChange from './on-change';
 const combine = <Config extends Record<string, Reactive<any>>>(
   config: Config
 ) => {
-  const current = () =>
-    Object.fromEntries(
-      Object.entries(config).map(([key, $var]) => [key, $var()])
-    );
+  const keys = Object.keys(config) as (keyof typeof config)[];
+  const $vars = Object.values(config);
 
-  const $combined = reactive(current());
-  seal($combined);
+  return join(...$vars, (...values: any[]) =>
+    values.reduce((map, value, i) => {
+      map[keys[i]] = value;
 
-  const recalc = () => {
-    setToSealed($combined, current());
-  };
-
-  Object.values(config).forEach(($var) => onChange($var, recalc));
-
-  return $combined as Reactive<{
-    [K in keyof Config]: ReturnType<Config[K]>;
+      return map;
+    }, {})
+  ) as Reactive<{
+    [Key in keyof Config]: ReturnType<Config[Key]>;
   }>;
 };
 
