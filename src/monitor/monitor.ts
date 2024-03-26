@@ -31,9 +31,6 @@ class Monitor {
 
   private running = false;
 
-  private runTask = (...tasks: Task[]) =>
-    Promise.all(tasks.map(this.pushToQueue));
-
   private pushToQueue = <R>(task: Task<R>) =>
     new Promise<R>((resolve, reject) => {
       const wrapped: Task<void> = async () =>
@@ -61,7 +58,7 @@ class Monitor {
   public add<F extends (...args: any[]) => Promise<any>>(fn: F) {
     return (...args: Parameters<typeof fn>) =>
       new Promise((resolve, reject) => {
-        this.runTask(() => fn(...args))
+        this.pushToQueue(() => fn(...args))
           .then(resolve)
           .catch(reject);
       });
