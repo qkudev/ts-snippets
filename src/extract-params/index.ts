@@ -1,1 +1,1 @@
-export { default } from './path-params';
+export { default } from './extract-params';
