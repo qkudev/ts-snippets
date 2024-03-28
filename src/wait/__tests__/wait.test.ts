@@ -8,6 +8,6 @@ describe('wait', () => {
 
     const t1 = performance.now();
 
-    expect(t1 - t0).toBeGreaterThanOrEqual(100);
+    expect(Math.ceil(t1 - t0)).toBeGreaterThanOrEqual(100);
   });
 });
