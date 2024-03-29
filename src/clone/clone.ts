@@ -14,9 +14,13 @@ const clone = <T>(val: T): T => {
     return val.map((element) => clone(element)) as unknown as T;
   }
 
-  return Object.fromEntries(
-    Object.entries(val).map(([key, value]) => [key, clone(value)])
-  ) as unknown as T;
+  if ('constructor' in val && val.constructor === Object) {
+    return Object.fromEntries(
+      Object.entries(val).map(([key, value]) => [key, clone(value)])
+    ) as unknown as T;
+  }
+
+  return val;
 };
 
 export default clone;

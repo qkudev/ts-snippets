@@ -55,4 +55,12 @@ describe('clone', () => {
     expect(cloned[1]).not.toBe(arr[1]);
     expect(cloned).toEqual(arr);
   });
+
+  it('should return same reference for promise', () => {
+    const promise = Promise.resolve();
+
+    const cloned = clone(promise);
+
+    expect(cloned).toBe(promise);
+  });
 });
