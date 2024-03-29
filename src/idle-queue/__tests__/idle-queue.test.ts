@@ -63,4 +63,19 @@ describe('IdleQueue', () => {
 
     expect(result).toBe(42);
   });
+
+  it('should prioritize tasks', async () => {
+    let result = 0;
+
+    await Promise.all([
+      idle.addTask(() => {
+        result *= 2;
+      }, 10),
+      idle.addTask(() => {
+        result += 10;
+      }, 0),
+    ]);
+
+    expect(result).toBe(20);
+  });
 });

@@ -14,5 +14,8 @@ describe('PriorityQueue', () => {
 
     pq.push({ value: 'Xerox' }, 0);
     expect(pq.peek()?.value).toEqual('Xerox');
+
+    pq.push({ value: 'Zeus' }, 2);
+    expect(pq.peek()?.value).toEqual('Xerox');
   });
 });
