@@ -1,7 +1,10 @@
 import { Heap } from '../heap';
 
 class QElement<T = unknown> {
-  constructor(public readonly element: T, public readonly priority: number) {}
+  constructor(
+    public readonly element: T,
+    public readonly priority: number
+  ) {}
 }
 
 class PriorityQueue<T = unknown> {
@@ -18,6 +21,10 @@ class PriorityQueue<T = unknown> {
 
   public peek(): T | undefined {
     return this.heap.peek()?.element;
+  }
+
+  public clear() {
+    this.heap.clear();
   }
 
   public get isEmpty(): boolean {

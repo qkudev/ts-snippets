@@ -89,6 +89,14 @@ class Heap<T> {
   public peek = (): T | undefined => this.state[1];
 
   /**
+   * Drops current queue state
+   */
+  public clear() {
+    this.state = [null as any];
+    this.realSize = 0;
+  }
+
+  /**
    * Returns the number of elements in the heap.
    */
   public get size(): number {

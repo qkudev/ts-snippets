@@ -54,4 +54,16 @@ describe('Heap', () => {
     top = minHeap.pop();
     expect(top).toEqual(8);
   });
+
+  it('should clear state', () => {
+    const maxHeap = new Heap<number>((a, b) => b - a);
+    maxHeap.push(1);
+    maxHeap.push(2);
+
+    maxHeap.clear();
+    maxHeap.push(10);
+
+    expect(maxHeap.size).toBe(1);
+    expect(maxHeap.peek()).toBe(10);
+  });
 });

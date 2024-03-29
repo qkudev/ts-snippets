@@ -1,4 +1,4 @@
-import Queue from '../queue';
+import PriorityQueue from '../priority-queue';
 
 /**
  * A function with 0 arguments
@@ -9,7 +9,7 @@ type Task<R = void> = (() => R) | (() => Promise<R>);
  * Manages a queue of tasks to be executed asynchronously when the browser is idle.
  */
 class IdleQueue {
-  private queue = new Queue<Task>();
+  private queue = new PriorityQueue<Task>();
 
   private plannedTask = false;
 
@@ -20,8 +20,9 @@ class IdleQueue {
    * fulfills when the task will be completed.
    * If the task returns anything, promise will be fulfilled with
    * result of the task.
+   * Less priority number means higher priority run.
    */
-  public addTask<R = void>(task: Task<R>): Promise<R> {
+  public addTask<R = void>(task: Task<R>, priority = 0): Promise<R> {
     return new Promise<R>((resolve, reject) => {
       this.queue.push(async () => {
         try {
@@ -29,7 +30,7 @@ class IdleQueue {
         } catch (error) {
           reject(error);
         }
-      });
+      }, priority);
 
       this.requestRun();
     });
@@ -49,7 +50,7 @@ class IdleQueue {
   };
 
   private run = async () => {
-    while (!this.queue.empty) {
+    while (!this.queue.isEmpty) {
       const task = this.queue.pop()!;
       await task();
     }
