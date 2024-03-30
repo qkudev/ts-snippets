@@ -1,52 +1,81 @@
-import wait from '../../wait/wait';
+import wait from '../../wait';
 import Monitor from '../monitor';
 
 describe('Monitor', () => {
-  let monitor = new Monitor();
+  let monitor = Monitor();
 
   beforeEach(() => {
-    monitor = new Monitor();
+    monitor = Monitor();
   });
 
   it('should wrap two functions and make their calls sequentual', async () => {
     let result = 0;
 
-    const f1 = jest.fn().mockImplementation(async () => {
+    const g1 = monitor(async () => {
       result += 10;
     });
-    const f2 = jest.fn().mockImplementation(async () => {
+    const g2 = monitor(async () => {
       await wait(30);
 
       result *= 2;
     });
-
-    const g1 = monitor.add(f1);
-    const g2 = monitor.add(f2);
     await Promise.all([g1(), g2()]);
 
     expect(result).toBe(20);
   });
 
   it('should reject inner promise', () => {
-    const f = jest.fn().mockImplementation(async () => {
+    const g = monitor(async () => {
       throw new Error('Error');
     });
-
-    const g = monitor.add(f);
 
     expect(g()).rejects.toThrow('Error');
   });
 
   it('should return value from original fn', async () => {
-    const f = jest.fn().mockImplementation(async () => {
+    const g = monitor(async () => {
       await wait(0);
 
       return 42;
     });
-
-    const g = monitor.add(f);
     const result = await g();
 
     expect(result).toBe(42);
+  });
+
+  it('should use given task priority', async () => {
+    let result = 0;
+
+    const g1 = monitor(async () => {
+      await wait(10);
+      result *= 2;
+    }, 10);
+    const g2 = monitor(async () => {
+      await wait(10);
+      result += 10;
+    }, 0);
+
+    await Promise.all([g1(), g2(), g2()]);
+
+    expect(result).toBe(40);
+  });
+
+  it('should run two tasks in parallel', async () => {
+    monitor = Monitor({ parallel: 2 });
+
+    let result = 0;
+
+    const mul2 = monitor(async () => {
+      await wait(10);
+      result *= 2;
+    });
+    const add10 = monitor(async () => {
+      await wait(10);
+      result += 10;
+    });
+
+    await Promise.all([mul2(), add10(), mul2()]);
+
+    expect(result).toBe(20);
   });
 });
