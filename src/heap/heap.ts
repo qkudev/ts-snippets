@@ -66,8 +66,8 @@ class Heap<T> {
     while (index <= this.realSize / 2) {
       const left = index * 2;
       const right = index * 2 + 1;
-      if (this.compare(index, left) > 0 || this.compare(index, right) > 0) {
-        if (this.compare(right, left) > 0) {
+      if (this.compare(index, left) >= 0 || this.compare(index, right) > 0) {
+        if (this.compare(right, left) >= 0) {
           this.swap(index, left);
           index = left;
         } else {
