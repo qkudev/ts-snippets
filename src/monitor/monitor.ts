@@ -1,68 +1,85 @@
-import Queue from '../queue';
+import PriorityQueue from '../priority-queue';
 
 type Task<R = void> = () => Promise<R>;
 
+interface MonitorOptions {
+  /**
+   * Max parallel calls running.
+   * @default 1
+   */
+  parallel?: number;
+}
+
 /**
- * Influenced by Java's monitors.
- * The idea is that `Monitor` as an instance that can wrap given
- * functions with `add` method. Wrapped function calls will
- * not be executed in parallel.
+ * A function that accepts any function and priority (number, optional)
+ * and returns wrapped function that will never be called parallel
+ * with other wrapped functions.
+ * Priority works like this: if N wrapped functions were called
+ * in the same time, all of them will be called consequently and
+ * with order "less is better".
  *
  * @example
- * const monitor = new Monitor()
- * let result = 0
- * const f1 = async () => {
- *  await wait(100)
- *  result += 10;
- * }
- * const f2 = async () => {
+ * let result = 0;
+ * const f1 = monitor(async () => {
  *   await wait(10);
- *   result *= 2
- * }
- * const g1 = monitor.add(g1)
- * const g2 = monitor.add(g2)
+ *   result *= 2;
+ * }, 10);
  *
- * await Promise.all([g1(), g2()])
+ * const f2 = monitor(async () => {
+ *   await wait(10);
+ *   result += 10;
+ * }, 0);
  *
- * console.log(result) // 20
+ * await Promise.all([f1(), f2(), f2()]);
+ *
+ * console.log(result)   // 40
  */
-class Monitor {
-  private readonly queue: Queue<Task> = new Queue<Task>();
+const monitor = (options: MonitorOptions = {}) => {
+  const parallel = options.parallel ?? 1;
 
-  private running = false;
+  if (parallel < 1) {
+    throw new Error('Number of parallel tasks less than 1');
+  }
 
-  private pushToQueue = <R>(task: Task<R>) =>
-    new Promise<R>((resolve, reject) => {
-      const wrapped: Task<void> = async () =>
-        task().then(resolve).catch(reject);
-      this.queue.push(wrapped);
+  const queue = new PriorityQueue<Task>();
+  async function runner(): Promise<void> {
+    while (queue.size) {
+      const task = queue.pop() as Task;
+      await task();
+    }
+  }
 
-      this.run();
-    });
+  let running = false;
 
-  private run = async () => {
-    if (this.running) {
+  const run = async () => {
+    if (running) {
       return;
     }
 
-    this.running = true;
-
-    while (!this.queue.empty) {
-      const task = this.queue.pop() as Task;
-      await task();
-    }
-
-    this.running = false;
+    running = true;
+    const runners = new Array(parallel).fill(0).map(runner);
+    await Promise.all(runners);
+    running = false;
   };
 
-  public add<F extends (...args: any[]) => Promise<any>>(fn: F) {
-    return (...args: Parameters<typeof fn>) =>
-      new Promise((resolve, reject) => {
-        this.pushToQueue(() => fn(...args))
-          .then(resolve)
-          .catch(reject);
-      });
-  }
-}
+  const registerTask = (task: Task, priority: number) => {
+    queue.push(task, priority);
+    Promise.resolve().then(run);
+  };
 
-export default Monitor;
+  return <F extends (...args: any[]) => any>(fn: F, priority: number = 0) =>
+    (...args: Parameters<typeof fn>) =>
+      new Promise((resolve, reject) => {
+        const task = async () => {
+          try {
+            resolve(await fn(...args));
+          } catch (error) {
+            reject(error);
+          }
+        };
+
+        registerTask(task, priority);
+      });
+};
+
+export default monitor;

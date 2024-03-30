@@ -19,16 +19,12 @@ describe('TaskQueue', () => {
     };
 
     const taskQueue = new TaskScheduler(2);
-    const logComplete: any = (n: number) => {
-      // eslint-disable-next-line no-console
-      console.log(`t${n} done ${new Date().toJSON()}`);
-    };
-    taskQueue.add(createTask(200, 1)).then(logComplete);
-    taskQueue.add(createTask(300, 2)).then(logComplete);
-    taskQueue.add(createTask(500, 3)).then(logComplete);
+    taskQueue.add(createTask(200, 1));
+    taskQueue.add(createTask(300, 2));
+    taskQueue.add(createTask(500, 3));
     await wait(400);
 
-    taskQueue.add(createTask(300, 4)).then(logComplete);
+    taskQueue.add(createTask(300, 4));
     await wait(1000);
     expect(true).toBe(true);
   });
