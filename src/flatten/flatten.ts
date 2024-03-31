@@ -3,6 +3,12 @@ export type NestedArray<T> = (T | NestedArray<T>)[];
 /**
  * Flatten array for given levels.
  * Fuly flatten array by default.
+ *
+ * @example
+ * const arr = [1, [2, 3, [4, [5]]]];
+ *
+ * console.log(flatten(arr));    // [1, 2, 3, 4, 5]
+ * console.log(flatten(arr, 2))  // [1, 2, 3, 4, [5]]
  */
 const flatten = <T>(
   array: NestedArray<T>,
