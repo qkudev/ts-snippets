@@ -1,4 +1,5 @@
-import Stack from '../stack';
+// should use array-based stack because of `.at()` O(1)
+import Stack from '../stack/stack';
 
 /**
  * Queue-ordered container.
@@ -9,7 +10,8 @@ class Queue<T> {
 
   private out = new Stack<T>();
 
-  public static readonly from = <V>(iterable: Iterable<V>) => new Queue<V>(iterable);
+  public static readonly from = <V>(iterable: Iterable<V>) =>
+    new Queue<V>(iterable);
 
   /**
    * Creates queue. Optional "iterable" arg will be used for initial state
@@ -85,7 +87,7 @@ class Queue<T> {
   /**
    * Returns iterator for the state
    */
-  public* [Symbol.iterator](): Iterator<T> {
+  public *[Symbol.iterator](): Iterator<T> {
     const copy: T[] = [];
 
     for (let i = 0; i < this.size; i++) {
