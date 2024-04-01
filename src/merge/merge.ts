@@ -18,7 +18,7 @@ const xor = (a: boolean, b: boolean) => (a && !b) || (b && !a);
  *   }
  * }
  *
- * console.log(merge(obj1, obj2)) // { a: { b: 2, c: 4, d: 4 }}
+ * console.log(merge(obj1, obj2)) // { a: { b: 2, c: 3, d: 4 }}
  */
 function merge(obj1: any, obj2: any): any {
   if (typeof obj1 !== typeof obj2 || notObjectOrNull(obj1) || obj2 === null) {
