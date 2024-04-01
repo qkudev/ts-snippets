@@ -1,2 +1,1 @@
-export { DoubleLinkedListNode } from './double-linked-list';
-export { LinkedList } from './linked-list';
+export { default } from './doubly-linked-list';
