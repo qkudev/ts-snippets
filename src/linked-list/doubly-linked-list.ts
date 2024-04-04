@@ -140,6 +140,12 @@ class LinkedList<T> {
     return node?.val;
   }
 
+  public clear() {
+    this.head = null;
+    this.tail = null;
+    this._size = 0;
+  }
+
   /**
    * Returns number of values in the list.
    * `O(1)` time complexity.

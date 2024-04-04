@@ -1,23 +1,17 @@
-class LLNode<T> {
-  constructor(
-    public readonly value: T,
-    public next: LLNode<T> | null = null
-  ) {}
-}
+import LinkedList from '../linked-list/doubly-linked-list';
 
 /**
  * Stack-ordered container
  */
 class Stack<T> {
-  private head: LLNode<T> | null = null;
-
-  private _size = 0;
+  private list = new LinkedList<T>();
 
   /**
    * Creates stack from given iterable
    */
-  public static readonly from = <V>(iterable: Iterable<V>) =>
-    new Stack<V>(iterable);
+  public static from<V>(iterable: Iterable<V>) {
+    return new Stack<V>(iterable);
+  }
 
   /**
    * Creates stack. Optional "iterable" arg will be used for initial state
@@ -33,74 +27,56 @@ class Stack<T> {
   /**
    * Adds given item to the top of stack
    */
-  public readonly push = (...item: T[]): void => {
+  public push(...item: T[]): void {
     for (const value of item) {
-      this.insertToHead(value);
+      this.list.insertIntoHead(value);
     }
-  };
+  }
 
   /**
    * Removes item from top of the stacks and returns it
    */
-  public readonly pop = (): T | undefined => {
-    if (!this.head) {
-      return undefined;
-    }
-    const { head } = this;
-    this.head = this.head.next;
-    this._size--;
-
-    return head.value;
-  };
+  public pop(): T | undefined {
+    return this.list.shift();
+  }
 
   /**
    * Removes item from top of the stacks. Will not remove it from the state
    */
-  public readonly peek = (): T | undefined => this.head?.value;
+  public peek(): T | undefined {
+    return this.list.peekHead();
+  }
 
   /**
    * Returns element by given index
    */
-  public readonly at = (index: number): T | undefined => {
+  public at(index: number): T | undefined {
     if (index < 0) {
       throw new Error('Index is lower than 0 ');
     }
 
-    let node = this.head;
-    let i = 0;
-    while (node && i < index) {
-      node = node.next;
-      i++;
-    }
-
-    return node?.value;
-  };
+    return this.list.at(index);
+  }
 
   /**
    * Drops current state
    */
-  public readonly clear = (): void => {
-    this.head = null;
-    this._size = 0;
-  };
+  public clear(): void {
+    this.list.clear();
+  }
 
   /**
    * Returns iterator for the state
    */
-  public *[Symbol.iterator](): Iterator<T> {
-    let node = this.head;
-
-    while (node) {
-      yield node.value;
-      node = node.next;
-    }
+  public [Symbol.iterator](): Iterator<T> {
+    return this.list[Symbol.iterator]();
   }
 
   /**
    * Number of items
    */
   public get size(): number {
-    return this._size;
+    return this.list.size;
   }
 
   /**
@@ -108,11 +84,6 @@ class Stack<T> {
    */
   public get empty(): boolean {
     return !this.size;
-  }
-
-  private insertToHead(value: T) {
-    this.head = new LLNode(value, this.head);
-    this._size++;
   }
 }
 
