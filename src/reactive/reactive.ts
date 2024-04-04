@@ -1,11 +1,11 @@
-import { REACTIVE, defaultEqualityFn, ID } from './utils';
+import { REACTIVE, defaultEqualityFn, ID, SEALED } from './utils';
 import { EqualityFn, Reactive } from './types';
 import map from './map';
 import filter from './filter';
 import { bus } from './bus';
 import onChange from './on-change';
-import { createVar, getValue } from './root';
 import reduce from './reduce';
+import { generateId } from './id';
 
 /**
  * Creates a new reactive variable with the given initial state and optional equality function.
@@ -23,28 +23,40 @@ function reactive<T>(
   initialState: T,
   equalityFn: EqualityFn = defaultEqualityFn
 ): Reactive<T> {
-  const id = createVar(initialState, equalityFn);
+  const id = generateId();
+  let state = initialState;
+
+  function notifyListeners() {
+    bus.emit(`change/${id}`, state);
+  }
 
   function setState(next: T) {
-    bus.emit('set', {
-      id,
-      value: next,
-    });
+    if (equalityFn(next, state)) {
+      return;
+    }
+
+    state = next;
+    notifyListeners();
   }
 
   function self(...args: [] | [T]) {
-    if (args.length) {
-      const [nextState] = args;
+    if (args.length && !(self as any)[SEALED]) {
+      const [nextStateOrSetter] = args;
+      const nextState =
+        typeof nextStateOrSetter === 'function'
+          ? nextStateOrSetter(state)
+          : nextStateOrSetter;
 
       setState(nextState);
     }
 
-    return getValue(id);
+    return state;
   }
 
   Object.assign(self, {
     [ID]: id,
     [REACTIVE]: true,
+    [SEALED]: false,
     onChange: onChange(self as Reactive<T>),
     map: map(self as Reactive<T>),
     filter: filter(self as Reactive<T>),
