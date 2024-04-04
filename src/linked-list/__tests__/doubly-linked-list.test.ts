@@ -126,4 +126,16 @@ describe('DoubleLinkedList', () => {
 
     expect([...list]).toEqual([1, 2, 3]);
   });
+
+  it('should clear state', () => {
+    [1, 2, 3].forEach((value) => {
+      list.insertIntoHead(value);
+    });
+
+    list.clear();
+
+    expect(list.size).toBe(0);
+    expect(list.peekHead()).toBe(undefined);
+    expect(list.peekTail()).toBe(undefined);
+  });
 });
