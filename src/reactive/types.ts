@@ -1,4 +1,4 @@
-import { REACTIVE, ID } from './utils';
+import { REACTIVE, ID, SEALED } from './utils';
 
 /**
  * A function that receives a value of type T and returns void.
@@ -83,6 +83,7 @@ export type Reactive<Type> = ((
 
   [REACTIVE]: true;
   [ID]: number;
+  [SEALED]: boolean;
 };
 
 export interface ReactiveVarState<T> {

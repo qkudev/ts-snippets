@@ -1,9 +1,8 @@
-import { bus } from './bus';
-import { getId } from './id';
 import type { EqualityFn, Reactive } from './types';
 
 export const REACTIVE = Symbol('reactive');
 export const ID = Symbol('id');
+export const SEALED = Symbol('sealed');
 
 /**
  * Type guard for checking iv given value is a reactive var
@@ -19,7 +18,7 @@ export const seal = <T>($var: Reactive<T>) => {
     throw new TypeError('Not reactive value given');
   }
 
-  bus.emit('seal', getId($var));
+  $var[SEALED] = true;
 };
 
 /**
@@ -32,7 +31,7 @@ export const unseal = <T>($var: Reactive<T>) => {
     throw new TypeError('Not reactive value given');
   }
 
-  bus.emit('unseal', getId($var));
+  $var[SEALED] = false;
 };
 
 /**

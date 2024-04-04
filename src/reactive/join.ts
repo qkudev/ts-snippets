@@ -2,7 +2,6 @@ import reactive from './reactive';
 import { ExtractReturnType, VarsArray, Combiner } from './types';
 import { seal, setToSealed } from './utils';
 import onChange from './on-change';
-import { getValue } from './root';
 
 /**
  * Accepts N reactive vars and `Combiner` as the last arg.
@@ -28,7 +27,7 @@ function join<Vars extends VarsArray, Result>(
   const combiner = joinArgs.pop() as Combiner<Vars, Result>;
   const $vars = joinArgs as VarsArray;
   const current = () =>
-    combiner(...($vars.map(getValue) as ExtractReturnType<Vars>));
+    combiner(...($vars.map(($var) => $var()) as ExtractReturnType<Vars>));
 
   const joined = reactive(current());
   seal(joined);
