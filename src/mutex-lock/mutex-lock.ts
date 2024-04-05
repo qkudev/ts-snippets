@@ -1,8 +1,8 @@
-import Queue from '../queue/queue-v2';
-
-type Waiter = () => void;
+import PriorityQueue from '../priority-queue/priority-queue';
 
 type Release = () => void;
+
+type Task = (release: Release) => void;
 
 /**
  * The `MutexLock` class provides a simple and efficient way to control
@@ -32,35 +32,48 @@ type Release = () => void;
 class MutexLock {
   private __locked = false;
 
-  private queue = new Queue<Waiter>();
+  private queue = new PriorityQueue<Task>();
 
-  public acquire = () =>
+  /**
+   * Aqcuires a "thread" lock.
+   * Accepts `priority` for the task. Less priority
+   * means earlier run.
+   * Returns `release()` function to release the lock.
+   */
+  public acquire = (priority = 0) =>
     new Promise<Release>((resolve) => {
-      if (this.__locked) {
-        this.queue.push(() => this.lock(resolve));
-
-        return;
-      }
-
-      this.lock(resolve);
+      this.queue.push(resolve, priority);
+      Promise.resolve().then(this.runLocks);
     });
 
   public get isLocked() {
     return this.__locked;
   }
 
-  private lock = (handler: (relese: Release) => void) => {
+  private lock = () => {
     this.__locked = true;
-
-    handler(this.release);
   };
 
   private release = () => {
     this.__locked = false;
+  };
 
-    if (!this.queue.empty) {
-      const waiter = this.queue.pop()!;
-      waiter();
+  private runLocks = async () => {
+    if (this.queue.isEmpty || this.__locked) {
+      return;
+    }
+
+    while (this.queue.size) {
+      const task = this.queue.pop()!;
+
+      await new Promise<void>((resolve) => {
+        this.lock();
+
+        task(() => {
+          this.release();
+          resolve();
+        });
+      });
     }
   };
 }

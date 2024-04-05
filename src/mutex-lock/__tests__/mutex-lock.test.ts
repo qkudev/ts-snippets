@@ -42,4 +42,24 @@ describe('MutexLock', () => {
 
     expect(result).toBe(20);
   });
+
+  it('should accept priority', async () => {
+    let result = 0;
+
+    async function add10() {
+      const release = await lock.acquire(0);
+      result += 10;
+      release();
+    }
+
+    async function mul2() {
+      const release = await lock.acquire(10);
+      result *= 2;
+      release();
+    }
+
+    await Promise.all([mul2(), add10()]);
+
+    expect(result).toBe(20);
+  });
 });
