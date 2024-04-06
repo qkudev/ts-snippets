@@ -62,4 +62,33 @@ describe('MutexLock', () => {
 
     expect(result).toBe(20);
   });
+
+  it('should cause dead lock', async () => {
+    const f = jest.fn().mockImplementation((value: number) => value + 10);
+
+    async function add10(n: number) {
+      const release = await lock.acquire();
+      const result = f(n);
+      release();
+
+      return result;
+    }
+
+    async function calculate() {
+      const release = await lock.acquire();
+      let n = 10;
+      n = await add10(n);
+      release();
+
+      return n;
+    }
+
+    const promise = new Promise<number>((resolve, reject) => {
+      calculate().then(resolve);
+      setTimeout(() => reject(new Error('Timeout')), 1000);
+    });
+
+    expect(promise).rejects.toThrow('Timeout');
+    expect(f).not.toHaveBeenCalled();
+  });
 });
