@@ -17,7 +17,7 @@ type Task = (release: Release) => void;
  * async function task1() {
  *   const release = await lock.acquire();
  *   // do your stuff. Any other call of `lock.aqcuire()`
- *   // won't resolve unit `release()` call
+ *   // won't resolve unitl `release()` call
  *   // e.g. any code between `lock.acquire()` and `release()` will be
  *   // syncrhonized between other `lock.acquire()` and `release()`
  *   // ...
