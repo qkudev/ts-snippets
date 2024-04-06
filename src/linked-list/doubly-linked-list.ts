@@ -29,7 +29,7 @@ class LinkedList<T> {
   private _size: number = 0;
 
   constructor(...values: T[]) {
-    values.forEach(this.insertIntoTail);
+    values.forEach((value) => this.insertIntoTail(value));
   }
 
   /**

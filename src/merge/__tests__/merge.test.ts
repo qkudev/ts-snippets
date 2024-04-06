@@ -62,4 +62,20 @@ describe('merge', () => {
 
     expect(result).toEqual({ a: 1 });
   });
+
+  it('should deep merge arrays of objects', () => {
+    const arr1 = [{ a: 1, b: 3 }];
+    const arr2 = [{ a: 2, c: 4 }];
+
+    const result = merge(arr1, arr2);
+
+    expect(Array.isArray(result)).toBe(true);
+    expect(result).toEqual([
+      {
+        a: 2,
+        b: 3,
+        c: 4,
+      },
+    ]);
+  });
 });

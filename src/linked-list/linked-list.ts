@@ -1,132 +1,105 @@
 type Nullable<T> = T | null;
 
-export class ListNode<T = any> {
+export class LNode<T = any> {
   constructor(
     public readonly val: T,
-    public next: Nullable<ListNode<T>> = null,
+    public next: Nullable<LNode<T>> = null
   ) {}
 }
 
-export class LinkedList<T> {
-  public head: Nullable<ListNode<T>> = null;
+/**
+ * Linked list
+ *
+ * @example
+ * const list = new LinkedList<nubmer>();
+ * list.insert(1);
+ * list.insert(2);
+ * console.log(list.size);          // 2
+ * console.log(list.peek());        // 2
+ * console.oog(list.shift())        // 2
+ */
+class LinkedList<T> {
+  private head: Nullable<LNode<T>> = null;
+
+  private _size: number = 0;
 
   constructor(...values: T[]) {
-    this.add(...values);
+    values.forEach((value) => this.insert(value));
   }
 
-  public add = (...values: T[]) => {
-    if (!values.length) {
-      return;
+  /**
+   * Inserts value into the start of the list.
+   * `O(1)` time complexity.
+   */
+  public insert(value: T): void {
+    this.head = new LNode(value, this.head);
+    this._size++;
+  }
+
+  /**
+   * Returns first value of the list without removal.
+   * `O(1)` time complexity.
+   */
+  public peek(): T | undefined {
+    return this.head?.val;
+  }
+
+  /**
+   * Removes value from the start of the list.
+   * `O(1)` time complexity.
+   */
+  public shift(): T | undefined {
+    if (this._size === 0) {
+      return undefined;
     }
 
-    const [val, ...rest] = values;
-    const newNode = new ListNode(val);
-    let curr = newNode;
-    rest.forEach((v) => {
-      curr.next = new ListNode(v);
-      curr = curr.next;
-    });
-
-    if (!this.head) {
-      this.head = newNode;
-    } else {
-      let node = this.head;
-      while (node.next) {
-        node = node.next;
-      }
-
-      node.next = newNode;
-    }
-  };
-
-  public addToHead = (...values: T[]) => {
-    for (const val of values) {
-      const newHead = new ListNode(val);
-      newHead.next = this.head;
-      this.head = newHead;
-    }
-  };
-
-  public shift = (): T | undefined => {
-    const currHead = this.head;
-
+    const head = this.head!;
     this.head = this.head?.next || null;
+    this._size--;
 
-    return currHead?.val;
-  };
+    return head.val;
+  }
 
-  public at = (i: number): T | undefined => {
+  /**
+   * Returns n-th value by given index.
+   * `O(n)` time complexity.
+   */
+  public at(index: number): T | undefined {
     let node = this.head;
-
-    for (let j = 0; j < i; j++) {
-      if (!node) {
-        return undefined;
-      }
-
-      node = node.next;
-    }
-
-    return node?.val;
-  };
-
-  public remove = (index: number): void => {
-    if (index === 0) {
-      this.head = this.head?.next || null;
-
-      return;
-    }
-
-    const j = 0;
-    let prev = this.head;
-    let curr = this.head;
-
-    while (j < index) {
-      if (!curr) {
-        return;
-      }
-
-      prev = curr;
-      curr = curr.next;
-    }
-
-    prev!.next = curr?.next || null;
-  };
-
-  public get size(): number {
     let i = 0;
-    let node = this.head;
 
-    while (node) {
+    while (node && i < index) {
       node = node.next;
       i++;
     }
 
-    return i;
+    return node?.val;
   }
 
-  public get empty(): boolean {
+  public clear() {
+    this.head = null;
+    this._size = 0;
+  }
+
+  /**
+   * Returns number of values in the list.
+   * `O(1)` time complexity.
+   */
+  public get size(): number {
+    return this._size;
+  }
+
+  /*
+   * Returns `true` if no values in list.
+   * `O(1)` time complexity.
+   */
+  public get isEmpty(): boolean {
     return !this.head;
   }
 
-  public concat(list: LinkedList<T>) {
-    if (!this.head) {
-      this.head = list.head;
-      return this;
-    }
-
-    this.tail!.next = list.head;
-    return this;
-  }
-
-  public get tail(): ListNode<T> | null {
-    let curr: ListNode<T> | null = this.head;
-    while (curr?.next) {
-      curr = curr.next;
-    }
-
-    return curr;
-  }
-
+  /**
+   * Returns list iterator.
+   */
   *[Symbol.iterator]() {
     let node = this.head;
 
@@ -136,3 +109,5 @@ export class LinkedList<T> {
     }
   }
 }
+
+export default LinkedList;

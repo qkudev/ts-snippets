@@ -14,6 +14,14 @@ describe('DoubleLinkedList', () => {
     expect(list.isEmpty).toBe(true);
   });
 
+  it('should accept initial values in constructor', () => {
+    list = new LinkedList(1, 2);
+
+    expect(list.peekHead()).toBe(1);
+    expect(list.peekTail()).toBe(2);
+    expect(list.size).toBe(2);
+  });
+
   it('should insert a value into tail', () => {
     list.insertIntoTail(1);
 
