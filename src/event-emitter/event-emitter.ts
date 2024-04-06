@@ -27,7 +27,6 @@ class EventEmitter<Ev extends EventName = EventName> {
    * Adds a listener for the given event.
    * @param {Ev} event - The name of the event to listen for.
    * @param {Function} listener - The listener function to add.
-   * @returns {Function} A function that removes the listener when called.
    */
   public addListener = (event: Ev, listener: Function) => {
     if (!this.listeners.has(event)) {
@@ -55,7 +54,6 @@ class EventEmitter<Ev extends EventName = EventName> {
    * Adds a one-time listener for the given event.
    * @param {EventName} event - The name of the event to listen for.
    * @param {Function} listener - The listener function to add.
-   * @returns {Function} A function that removes the listener when called.
    */
   public once = (event: Ev, listener: Function) => {
     const onceListener = (...args: any[]) => {

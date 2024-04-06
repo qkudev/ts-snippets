@@ -1,61 +1,91 @@
-import { LinkedList } from '../linked-list';
+import LinkedList from '../linked-list';
 
 describe('Linked list', () => {
-  let list: LinkedList<number>;
+  let list = new LinkedList<number>();
 
   beforeEach(() => {
-    list = new LinkedList<number>();
+    list = new LinkedList();
   });
 
-  it('should add item to list', () => {
-    list.add(1);
-    list.add(2);
-
-    expect(list.at(0)).toEqual(1);
-    expect(list.at(1)).toEqual(2);
+  it('should be defined', () => {
+    expect(list).toBeDefined();
+    expect(list).toBeInstanceOf(LinkedList);
+    expect(list.size).toBe(0);
+    expect(list.isEmpty).toBe(true);
   });
 
-  it('removes item from list', () => {
-    list.add(1);
-    list.add(2);
+  it('should accept initial values in constructor', () => {
+    list = new LinkedList(1, 2);
 
-    list.remove(0);
-    expect(list.head?.val).toEqual(2);
-
-    list.remove(0);
-    expect(list.size).toEqual(0);
-    expect(list.empty).toBe(true);
+    expect(list.at(0)).toBe(2);
+    expect(list.at(1)).toBe(1);
+    expect(list.size).toBe(2);
   });
 
-  it('should iterate', () => {
-    list.add(1);
-    list.add(2);
+  it('should insert into head', () => {
+    list.insert(1);
 
-    expect([...list]).toEqual([1, 2]);
+    expect(list.size).toBe(1);
+    expect(list.isEmpty).toBe(false);
 
-    list = new LinkedList<number>(...[1, 2, 3]);
+    expect(list.peek()).toBe(1);
+  });
+
+  it('should insert many into head', () => {
+    list.insert(1);
+    list.insert(2);
+    list.insert(3);
+
+    expect(list.size).toBe(3);
+    expect(list.isEmpty).toBe(false);
+
+    expect(list.peek()).toBe(3);
+  });
+
+  it('should shift', () => {
+    [1, 2, 3].forEach((value) => {
+      list.insert(value);
+    });
+
+    expect(list.shift()).toBe(3);
+    expect(list.size).toBe(2);
+    expect(list.peek()).toBe(2);
+
+    expect(list.shift()).toBe(2);
+    expect(list.size).toBe(1);
+    expect(list.peek()).toBe(1);
+
+    expect(list.shift()).toBe(1);
+    expect(list.size).toBe(0);
+    expect(list.peek()).toBe(undefined);
+  });
+
+  it('should return value at the index (head insert)', () => {
+    [1, 2, 3].forEach((value) => {
+      list.insert(value);
+    });
+
     for (let i = 0; i < 3; i++) {
-      expect(list.at(i)).toEqual(i + 1);
+      expect(list.at(i)).toBe(3 - i);
     }
   });
 
-  it('should add to head', () => {
-    list.addToHead(3);
-    list.addToHead(2);
-    list.addToHead(1);
+  it('should work with iterator', () => {
+    [1, 2, 3].forEach((value) => {
+      list.insert(value);
+    });
 
-    expect([...list]).toEqual([1, 2, 3]);
-
-    list = new LinkedList();
-    list.addToHead(...[3, 2, 1]);
-    expect([...list]).toEqual([1, 2, 3]);
+    expect([...list]).toEqual([3, 2, 1]);
   });
 
-  it('should concat', () => {
-    list.add(1);
-    list.add(2);
-    const l2 = new LinkedList<number>(3, 4);
+  it('should clear state', () => {
+    [1, 2, 3].forEach((value) => {
+      list.insert(value);
+    });
 
-    expect([...list.concat(l2)]).toEqual([1, 2, 3, 4]);
+    list.clear();
+
+    expect(list.size).toBe(0);
+    expect(list.peek()).toBe(undefined);
   });
 });

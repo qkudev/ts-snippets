@@ -1,14 +1,20 @@
 import clone from '../clone';
 
 describe('clone', () => {
-  it.each([1, '1', undefined, null, Symbol('test'), () => undefined])(
-    'should return same value',
-    (value: unknown) => {
-      const cloned = clone(value);
+  it.each([
+    1,
+    '1',
+    undefined,
+    null,
+    Symbol('test'),
+    () => undefined,
+    new Date(),
+    Promise.resolve(),
+  ])('should return same value', (value: unknown) => {
+    const cloned = clone(value);
 
-      expect(cloned).toBe(value);
-    }
-  );
+    expect(cloned).toBe(value);
+  });
 
   it('should return cloned plain object', () => {
     const obj = { a: 1 };
@@ -54,13 +60,5 @@ describe('clone', () => {
     expect(cloned[0]).not.toBe(arr[0]);
     expect(cloned[1]).not.toBe(arr[1]);
     expect(cloned).toEqual(arr);
-  });
-
-  it('should return same reference for promise', () => {
-    const promise = Promise.resolve();
-
-    const cloned = clone(promise);
-
-    expect(cloned).toBe(promise);
   });
 });

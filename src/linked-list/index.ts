@@ -1,1 +1,1 @@
-export { default } from './doubly-linked-list';
+export { default as LinkedList, DLLNode } from './doubly-linked-list';

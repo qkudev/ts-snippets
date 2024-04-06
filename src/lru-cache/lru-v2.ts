@@ -6,7 +6,7 @@ class DLLNode<K, V> {
     public key: K,
     public val: V,
     public prev: Nullable<DLLNode<K, V>> = null,
-    public next: Nullable<DLLNode<K, V>> = null,
+    public next: Nullable<DLLNode<K, V>> = null
   ) {}
 }
 
@@ -20,16 +20,10 @@ class LRUCache<K extends Key, V> {
   private map = new Map<K, DLLNode<K, V>>();
 
   // Dummy node. real head is head.next
-  public head = new DLLNode<K, V>(
-    (HEAD as unknown) as K,
-    (null as unknown) as V,
-  );
+  public head = new DLLNode<K, V>(HEAD as unknown as K, null as unknown as V);
 
   // Dummy node. real tail is tail.prev
-  public tail = new DLLNode<K, V>(
-    (TAIL as unknown) as K,
-    (null as unknown) as V,
-  );
+  public tail = new DLLNode<K, V>(TAIL as unknown as K, null as unknown as V);
 
   constructor(public readonly capacity: number) {
     this.head.next = this.tail;
@@ -81,3 +75,4 @@ class LRUCache<K extends Key, V> {
 }
 
 export default LRUCache;
+
