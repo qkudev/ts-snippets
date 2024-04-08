@@ -22,7 +22,7 @@ class Container<Config extends Record<string, any>> {
       }
 
       if (!this.entities.has(key)) {
-        const registration = this.registrations.get(key);
+        const registration = this.registrations.get(key)!;
         const entity = registration.construct(this.proxy);
         this.entities.set(key, entity);
       }

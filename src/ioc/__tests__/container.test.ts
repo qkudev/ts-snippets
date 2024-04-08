@@ -89,7 +89,8 @@ describe('Container', () => {
     container.register(
       'analytics',
       asFunction((registrations) => {
-        registrations['test' as any] = 42;
+        // @ts-ignore
+        registrations.test = 42;
 
         return new Analytics(registrations);
       })
