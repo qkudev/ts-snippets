@@ -78,4 +78,70 @@ describe('Monitor', () => {
 
     expect(result).toBe(20);
   });
+
+  it('should lock', () => {
+    let result = 0;
+
+    const f1 = monitor(async () => {
+      await wait(0);
+      result += 10;
+    });
+
+    const throws = async () => {
+      await wait(1000);
+      if (result === 0) {
+        throw new Error('Lock success');
+      }
+    };
+
+    monitor.lock();
+
+    expect(() => Promise.all([f1(), throws()])).rejects.toThrow('Lock success');
+  });
+
+  it('should unlock', () => {
+    let result = 0;
+
+    const f1 = monitor(async () => {
+      await wait(0);
+      result += 10;
+
+      return result;
+    });
+
+    const throws = async () => {
+      await wait(1000);
+      if (result === 0) {
+        throw new Error('Lock success');
+      }
+    };
+
+    const unlock = monitor.lock();
+    unlock();
+
+    expect(Promise.all([f1(), throws()])).resolves.toEqual([10]);
+  });
+
+  it('should lock independently', () => {
+    let result = 0;
+
+    const f1 = monitor(async () => {
+      await wait(0);
+      result += 10;
+
+      return result;
+    });
+
+    const throws = async () => {
+      await wait(1000);
+      if (result === 0) {
+        throw new Error('Lock success');
+      }
+    };
+
+    const unlock1 = monitor.lock();
+    unlock1();
+
+    expect(() => Promise.all([f1(), throws()])).rejects.toThrow('Lock success');
+  });
 });
