@@ -10,6 +10,34 @@ interface MonitorOptions {
   parallel?: number;
 }
 
+type Unlock = () => void;
+
+interface Monitor {
+  <F extends (...args: any[]) => any>(
+    fn: F,
+    priority?: number
+  ): (...args: Parameters<typeof fn>) => Promise<ReturnType<typeof fn>>;
+
+  /**
+   * Stops function calls until `Unlock` is called.
+   * All queued calls will sleep too.
+   *
+   * @example
+   * const f = monitor(async () => {
+   *   // ... some stuff
+   * })
+   * const unlock = monitor.lock()
+   *
+   * f()         // "sleeps" until `unlock` is called
+   *
+   * // ...later
+   *
+   * unlock()    // now `f` actually runs
+   *
+   */
+  lock: () => Unlock;
+}
+
 /**
  * A function that accepts any function and priority (number, optional)
  * and returns wrapped function that will never be called parallel
@@ -34,8 +62,9 @@ interface MonitorOptions {
  *
  * console.log(result)   // 40
  */
-const monitor = (options: MonitorOptions = {}) => {
+const monitor = (options: MonitorOptions = {}): Monitor => {
   const parallel = options.parallel ?? 1;
+  const lockPromises: Promise<void>[] = [];
 
   if (parallel < 1) {
     throw new Error('Number of parallel tasks less than 1');
@@ -44,6 +73,7 @@ const monitor = (options: MonitorOptions = {}) => {
   const queue = new PriorityQueue<Task>();
   async function runner(): Promise<void> {
     while (queue.size) {
+      await Promise.all(lockPromises);
       const task = queue.pop() as Task;
       await task();
     }
@@ -67,9 +97,10 @@ const monitor = (options: MonitorOptions = {}) => {
     Promise.resolve().then(run);
   };
 
-  return <F extends (...args: any[]) => any>(fn: F, priority: number = 0) =>
+  const call =
+    <F extends (...args: any[]) => any>(fn: F, priority: number = 0) =>
     (...args: Parameters<typeof fn>) =>
-      new Promise((resolve, reject) => {
+      new Promise<ReturnType<typeof fn>>((resolve, reject) => {
         const task = async () => {
           try {
             resolve(await fn(...args));
@@ -80,6 +111,19 @@ const monitor = (options: MonitorOptions = {}) => {
 
         registerTask(task, priority);
       });
+
+  call.lock = (): Unlock => {
+    let unlock: Unlock;
+    const lockPromise = new Promise<void>((resolve) => {
+      unlock = resolve;
+    });
+
+    lockPromises.push(lockPromise);
+
+    return () => unlock();
+  };
+
+  return call as Monitor;
 };
 
 export default monitor;
