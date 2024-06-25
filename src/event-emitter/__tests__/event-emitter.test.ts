@@ -87,4 +87,14 @@ describe('EventEmitter', () => {
 
     expect(x).toBe(20);
   });
+
+  it('should wait for an event', async () => {
+    setTimeout(() => {
+      emitter.emit('test', true);
+    }, 500);
+
+    const result = await emitter.waitFor('test');
+
+    expect(result).toBe(true);
+  });
 });
