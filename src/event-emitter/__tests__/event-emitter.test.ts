@@ -64,4 +64,14 @@ describe('EventEmitter', () => {
     emitter.addListener('event2', jest.fn());
     expect(emitter.eventNames).toEqual(['event1', 'event2']);
   });
+
+  it('should wait for an event', async () => {
+    setTimeout(() => {
+      emitter.emit('test', true);
+    }, 500);
+
+    const result = await emitter.waitFor('test');
+
+    expect(result).toBe(true);
+  });
 });
