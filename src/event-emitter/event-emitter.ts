@@ -85,6 +85,16 @@ class EventEmitter<Ev extends EventName = EventName> {
   public get eventNames(): EventName[] {
     return [...this.listeners.keys()];
   }
+
+  /**
+   * Returns `Promise<Data>` that will be resolved
+   * on the next `event` emitted
+   */
+  public waitFor<Data>(event: Ev) {
+    return new Promise<Data>((resolve) => {
+      this.once(event, resolve);
+    });
+  }
 }
 
 export default EventEmitter;
