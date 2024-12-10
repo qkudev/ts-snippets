@@ -12,15 +12,18 @@ class EventEmitter<Ev extends EventName = EventName> {
   private readonly listeners: Map<EventName, Set<Function>> = new Map();
 
   /**
-   * Emits an event with the given name and arguments.
+   * Emits an event with the given name and arguments. Returns a promise
+   * that will be resolved when all the listeners are settled.
+   *
    * @param {Ev} event - The name of the event to emit.
    * @param {...any} args - The arguments to pass to the event listeners.
    */
-  public emit = (event: Ev, ...args: any[]) => {
-    const eventListeners = this.listeners.get(event);
-    if (!eventListeners) return;
+  public emit = async (event: Ev, ...args: any[]): Promise<void> => {
+    const eventListeners = this.listeners.get(event) || new Set();
 
-    eventListeners.forEach((listener) => listener(...args));
+    await Promise.allSettled(
+      [...eventListeners].map((listener) => listener(...args))
+    );
   };
 
   /**

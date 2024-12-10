@@ -1,3 +1,4 @@
+import wait from '../../wait/wait';
 import EventEmitter from '../event-emitter';
 
 const event = 'test-event';
@@ -63,5 +64,27 @@ describe('EventEmitter', () => {
     emitter.addListener('event1', jest.fn());
     emitter.addListener('event2', jest.fn());
     expect(emitter.eventNames).toEqual(['event1', 'event2']);
+  });
+
+  it('should work with async listeners ', async () => {
+    let x = 0;
+    const listener1 = async () => {
+      await wait(100);
+
+      x += 10;
+    };
+
+    const listener2 = async () => {
+      await wait(200);
+
+      x *= 2;
+    };
+
+    emitter.addListener('test', listener1);
+    emitter.addListener('test', listener2);
+
+    await emitter.emit('test');
+
+    expect(x).toBe(20);
   });
 });
