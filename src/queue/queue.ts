@@ -109,7 +109,7 @@ class Queue<T> {
   /**
    * Is the state empty
    */
-  public get empty(): boolean {
+  public get isEmpty(): boolean {
     return !this.size;
   }
 }

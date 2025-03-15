@@ -89,7 +89,7 @@ class Queue<T> {
    * Is the state empty.
    * O(1) time complexity.
    */
-  public get empty(): boolean {
+  public get isEmpty(): boolean {
     return !this.size;
   }
 }

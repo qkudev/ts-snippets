@@ -6,23 +6,23 @@ describe('Queue', () => {
 
     q.enqueue(1);
     expect(q.peek()).toEqual(1);
-    expect(q.empty).toEqual(false);
+    expect(q.isEmpty).toEqual(false);
 
     q.enqueue(2);
     expect(q.peek()).toEqual(1);
 
     expect(q.dequeue()!).toEqual(1);
     expect(q.dequeue()!).toEqual(2);
-    expect(q.empty).toEqual(true);
+    expect(q.isEmpty).toEqual(true);
   });
 
   it('stores size state', () => {
     const q = new Queue<number>();
-    expect(q.empty).toEqual(true);
+    expect(q.isEmpty).toEqual(true);
     expect(q.size).toEqual(0);
 
     q.enqueue(1);
-    expect(q.empty).toEqual(false);
+    expect(q.isEmpty).toEqual(false);
     expect(q.size).toEqual(1);
 
     q.enqueue(2);
@@ -31,7 +31,7 @@ describe('Queue', () => {
     q.dequeue();
     q.dequeue();
 
-    expect(q.empty).toEqual(true);
+    expect(q.isEmpty).toEqual(true);
     expect(q.size).toEqual(0);
   });
 
