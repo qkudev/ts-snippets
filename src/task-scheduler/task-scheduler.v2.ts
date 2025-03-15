@@ -20,14 +20,15 @@ class Runner {
 
   public add = (...tasks: Task[]) => Promise.all(tasks.map(this._pushToQueue));
 
-  private _pushToQueue = (task: Task) => new Promise<void>((resolve) => {
-    const wrapped = async () => resolve(await task());
-    this.queue.push(wrapped);
+  private _pushToQueue = (task: Task) =>
+    new Promise<void>((resolve) => {
+      const wrapped = async () => resolve(await task());
+      this.queue.enqueue(wrapped);
 
-    if (!this.running) {
-      this.run();
-    }
-  });
+      if (!this.running) {
+        this.run();
+      }
+    });
 
   public clear = () => {
     this.queue.clear();
@@ -35,8 +36,8 @@ class Runner {
 
   private run = async () => {
     this.running = true;
-    while (!this.queue.empty) {
-      const task = this.queue.pop()!;
+    while (!this.queue.isEmpty) {
+      const task = this.queue.dequeue()!;
       await task();
     }
     this.running = false;
@@ -63,29 +64,31 @@ class TaskScheduler {
 
   public add = (...tasks: Task[]) => Promise.all(tasks.map(this._pushToQueue));
 
-  private _pushToQueue = (task: Task) => new Promise<void>((resolve) => {
-    const wrapped = async () => resolve(await task());
-    Object.defineProperty(wrapped, 'id', {
-      value: this.idx++,
-    });
-    this.queue.push(wrapped);
+  private _pushToQueue = (task: Task) =>
+    new Promise<void>((resolve) => {
+      const wrapped = async () => resolve(await task());
+      Object.defineProperty(wrapped, 'id', {
+        value: this.idx++,
+      });
+      this.queue.enqueue(wrapped);
 
-    if (!this.running) {
-      this.run();
-    }
-  });
+      if (!this.running) {
+        this.run();
+      }
+    });
 
   public clear = () => {
     this.queue.clear();
   };
 
-  private getRunner = () => [...this.runners].sort((a, b) => a.size - b.size)[0]!;
+  private getRunner = () =>
+    [...this.runners].sort((a, b) => a.size - b.size)[0]!;
 
   private run = async () => {
     this.running = true;
     const promises: Promise<any>[] = [];
-    while (!this.queue.empty) {
-      const task = this.queue.pop()!;
+    while (!this.queue.isEmpty) {
+      const task = this.queue.dequeue()!;
       const runner = this.getRunner();
       promises.push(runner.add(task));
     }

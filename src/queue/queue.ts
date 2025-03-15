@@ -19,7 +19,7 @@ class Queue<T> {
   public constructor(iterable?: Iterable<T>) {
     if (iterable) {
       for (const el of iterable) {
-        this.push(el);
+        this.enqueue(el);
       }
     }
   }
@@ -27,14 +27,14 @@ class Queue<T> {
   /**
    * Adds given item to the end of queue
    */
-  public readonly push = (...items: T[]): void => {
+  public readonly enqueue = (...items: T[]): void => {
     this.in.push(...items);
   };
 
   /**
    * Removes item from start of the queue and returns it
    */
-  public readonly pop = (): T | undefined => {
+  public readonly dequeue = (): T | undefined => {
     if (this.out.size) {
       return this.out.pop();
     }
