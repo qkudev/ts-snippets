@@ -9,18 +9,17 @@ const levelTraversal = <T, R>(
     return;
   }
 
-  const queue = new Queue<TreeNode<T>>();
-  queue.push(head);
-  while (!queue.empty) {
+  const queue = new Queue<TreeNode<T>>([head]);
+  while (!queue.isEmpty) {
     const lvlSize = queue.size;
 
     for (let i = 0; i < lvlSize; i++) {
-      const node = queue.pop()!;
+      const node = queue.dequeue()!;
       callback(node.value);
 
       for (const child of node.children) {
         if (child) {
-          queue.push(child);
+          queue.enqueue(child);
         }
       }
     }

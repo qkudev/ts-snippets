@@ -4,34 +4,34 @@ describe('Queue', () => {
   it('enqueues value and has right order to pop values', () => {
     const q = new Queue<number>();
 
-    q.push(1);
+    q.enqueue(1);
     expect(q.peek()).toEqual(1);
-    expect(q.empty).toEqual(false);
+    expect(q.isEmpty).toEqual(false);
 
-    q.push(2);
+    q.enqueue(2);
     expect(q.peek()).toEqual(1);
 
-    expect(q.pop()!).toEqual(1);
-    expect(q.pop()!).toEqual(2);
-    expect(q.empty).toEqual(true);
+    expect(q.dequeue()!).toEqual(1);
+    expect(q.dequeue()!).toEqual(2);
+    expect(q.isEmpty).toEqual(true);
   });
 
   it('stores size state', () => {
     const q = new Queue<number>();
-    expect(q.empty).toEqual(true);
+    expect(q.isEmpty).toEqual(true);
     expect(q.size).toEqual(0);
 
-    q.push(1);
-    expect(q.empty).toEqual(false);
+    q.enqueue(1);
+    expect(q.isEmpty).toEqual(false);
     expect(q.size).toEqual(1);
 
-    q.push(2);
+    q.enqueue(2);
     expect(q.size).toEqual(2);
 
-    q.pop();
-    q.pop();
+    q.dequeue();
+    q.dequeue();
 
-    expect(q.empty).toEqual(true);
+    expect(q.isEmpty).toEqual(true);
     expect(q.size).toEqual(0);
   });
 
@@ -44,8 +44,8 @@ describe('Queue', () => {
     expect(() => q1.at(-1)).toThrow('Index is lower than 0');
 
     const q2 = new Queue([1, 2, 3, 4]);
-    q2.pop();
-    q2.push(5);
+    q2.dequeue();
+    q2.enqueue(5);
 
     for (let i = 0; i < q2.size; i++) {
       expect(q2.at(i)).toEqual(i + 2);
@@ -54,9 +54,9 @@ describe('Queue', () => {
 
   it('should be iterable and save correct order', () => {
     const q = new Queue<number>();
-    q.push(1);
-    q.push(2);
-    q.push(3);
+    q.enqueue(1);
+    q.enqueue(2);
+    q.enqueue(3);
 
     expect([...q]).toStrictEqual([1, 2, 3]);
   });
@@ -80,7 +80,7 @@ describe('Queue', () => {
 
   it('should push many items at one time', () => {
     const q = new Queue<number>();
-    q.push(1, 2, 3);
+    q.enqueue(1, 2, 3);
 
     expect([...q]).toStrictEqual([1, 2, 3]);
   });

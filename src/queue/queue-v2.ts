@@ -19,7 +19,7 @@ class Queue<T> {
   public constructor(iterable?: Iterable<T>) {
     if (iterable) {
       for (const el of iterable) {
-        this.push(el);
+        this.enqueue(el);
       }
     }
   }
@@ -28,7 +28,7 @@ class Queue<T> {
    * Adds given item to the end of queue.
    * O(1) time complexity for 1 element insertion.
    */
-  public push(...items: T[]): void {
+  public enqueue(...items: T[]): void {
     for (const value of items) {
       this.list.insertIntoTail(value);
     }
@@ -38,7 +38,7 @@ class Queue<T> {
    * Removes item from start of the queue and returns it.
    * O(1) time complexity.
    */
-  public pop(): T | undefined {
+  public dequeue(): T | undefined {
     return this.list.shift();
   }
 
@@ -89,7 +89,7 @@ class Queue<T> {
    * Is the state empty.
    * O(1) time complexity.
    */
-  public get empty(): boolean {
+  public get isEmpty(): boolean {
     return !this.size;
   }
 }

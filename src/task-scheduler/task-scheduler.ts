@@ -14,14 +14,15 @@ class TaskScheduler {
 
   public add = (...tasks: Task[]) => Promise.all(tasks.map(this.pushToQueue));
 
-  private pushToQueue = (task: Task) => new Promise<void>((resolve) => {
-    const wrapped = async () => resolve(await task());
-    this.queue.push(wrapped);
+  private pushToQueue = (task: Task) =>
+    new Promise<void>((resolve) => {
+      const wrapped = async () => resolve(await task());
+      this.queue.enqueue(wrapped);
 
-    if (!this.running) {
-      this.run();
-    }
-  });
+      if (!this.running) {
+        this.run();
+      }
+    });
 
   public clear = () => {
     this.queue.clear();
@@ -29,8 +30,8 @@ class TaskScheduler {
 
   private run = async () => {
     this.running = true;
-    while (!this.queue.empty) {
-      const task = this.queue.pop() as Task;
+    while (!this.queue.isEmpty) {
+      const task = this.queue.dequeue() as Task;
       await task();
     }
     this.running = false;
